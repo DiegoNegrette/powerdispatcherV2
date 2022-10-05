@@ -1,0 +1,29 @@
+version: "3.6"
+
+services:
+    # This container has to be exclude from production configurations.
+    # its main purpose is to allow you to access containers running in the host machine
+    # from inside of docker.
+    # docker-host:
+    #     image: qoomon/docker-host
+    #     cap_add: ["NET_ADMIN", "NET_RAW"]
+    #     # mem_limit: 8M
+    #     restart: on-failure
+
+    django:
+        restart: on-failure
+        image: django-powerdispatcher
+        env_file:
+            - .env
+        build:
+            context: ./
+        networks:
+            - default
+        ports:
+            - ${DJANGO_PORT}:8000
+        volumes:
+            - ./:/code
+        command: >
+            bash -c ' pipenv install --system --skip-lock --dev && python manage.py runserver 0.0.0.0:8000'
+        environment:
+            - DJANGO_SETTINGS_MODULE=service.settings
