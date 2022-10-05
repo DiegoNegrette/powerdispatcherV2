@@ -6,8 +6,6 @@ from powerdispatcher.models.status_category import StatusCategory
 
 
 class Status(ModifiedTimeStampMixin, TimeStampedModel):
-    # This feel was added but it was not on the table
-    name = models.CharField(max_length=20)
     status_category = models.ForeignKey(StatusCategory, on_delete=models.PROTECT)  # noqa
     who_cancelled = models.CharField(max_length=255)
     who_cancelled_description = models.CharField(
