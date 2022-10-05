@@ -14,7 +14,7 @@ class Status(ModifiedTimeStampMixin, TimeStampedModel):
 
     class Meta:
         verbose_name_plural = 'Status'
-        ordering = ('name',)
+        ordering = ('-id',)
         constraints = [
             models.UniqueConstraint(
                 fields=['name'], name='status_name_unique'
