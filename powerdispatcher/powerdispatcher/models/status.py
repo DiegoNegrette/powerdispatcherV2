@@ -17,4 +17,4 @@ class Status(ModifiedTimeStampMixin, TimeStampedModel):
         ordering = ('-id',)
 
     def __str__(self):
-        return self.name
+        return self.status_category.name
