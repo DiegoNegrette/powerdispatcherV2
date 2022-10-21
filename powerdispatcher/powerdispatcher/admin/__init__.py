@@ -3,6 +3,7 @@ from django.contrib import admin
 from powerdispatcher.models import (
     Customer,
     Dispatcher,
+    ProjectConfiguration,
     Status,
     StatusCategory,
     Technician,
@@ -15,3 +16,4 @@ admin.site.register(Status)
 admin.site.register(StatusCategory)
 admin.site.register(Technician)
 admin.site.register(Ticket)
+admin.site.register(ProjectConfiguration)

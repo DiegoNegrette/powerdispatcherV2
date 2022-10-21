@@ -4,11 +4,25 @@ services:
     # This container has to be exclude from production configurations.
     # its main purpose is to allow you to access containers running in the host machine
     # from inside of docker.
-    # docker-host:
-    #     image: qoomon/docker-host
-    #     cap_add: ["NET_ADMIN", "NET_RAW"]
-    #     # mem_limit: 8M
-    #     restart: on-failure
+    docker-host:
+        image: qoomon/docker-host
+        cap_add: ["NET_ADMIN", "NET_RAW"]
+        # mem_limit: 8M
+        restart: on-failure
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+            - 5672:5672
+            - 15672:15672
+        expose:
+            - 15672
+        networks:
+            - default
+        volumes:
+            - ./local/rabbitmq:/etc/rabbitmq/
+            - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/mnesia
+            - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
 
     django:
         restart: on-failure
@@ -27,3 +41,73 @@ services:
             bash -c ' pipenv install --system --skip-lock --dev && python manage.py runserver 0.0.0.0:8000'
         environment:
             - DJANGO_SETTINGS_MODULE=service.settings
+
+    # celery-worker:
+    #     restart: on-failure
+    #     image: django-fbbot
+    #     env_file:
+    #         - .env.dev
+    #         - .env
+    #     build:
+    #         context: ./
+    #     volumes:
+    #         - ./:/code
+    #     command: >
+    #         bash -c ' pipenv install --system --skip-lock --dev && sleep 14 && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A service worker --concurrency 4 -O fair --beat --scheduler django -l INFO'
+    #     depends_on:
+    #         - rabbitmq
+
+    celery-worker-test:
+        restart: on-failure
+        image: django-powerdispatcher
+        env_file:
+            - .env
+        build:
+            context: ./
+        volumes:
+            - ./:/code
+        command: >
+            bash -c '
+            pipenv install --system --skip-lock --dev &&
+            sleep 14 &&
+            watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A service worker --concurrency 2 -O fair -Q main_queue -l INFO'
+        depends_on:
+            - rabbitmq
+
+    chrome:
+        image: selenium/node-chrome:4.5.0-20221017
+        shm_size: 2gb
+        depends_on:
+            - selenium-hub
+        environment:
+            - SE_EVENT_BUS_HOST=selenium-hub
+            - SE_EVENT_BUS_PUBLISH_PORT=4442
+            - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+            - HUB_HOST=selenium-hub
+            - HUB_PORT=4444
+            - NODE_MAX_INSTANCES=${NUMBER_OF_WEBDRIVER_PER_NODE}
+            - NODE_MAX_SESSION=${NUMBER_OF_WEBDRIVER_PER_NODE}
+            - START_XVFB=true
+            - VNC_NO_PASSWORD=1
+            - JAVA_OPTS=-Dwebdriver.chrome.whitelistedIps= -Dselenium.LOGGER.level=WARNING
+            - CONTAINER_HOST_IP
+            - SCREEN_WIDTH=1366
+            - SCREEN_HEIGHT=768
+        ports:
+            - "${WEBDRIVER_PORT_START}-${WEBDRIVER_PORT_END}:5900"
+        stdin_open: true
+        tty: true
+
+    selenium-hub:
+        image: selenium/hub:4.5.0-20221017
+        ports:
+            - "4442:4442"
+            - "4443:4443"
+            - "4444:4444"
+        environment:
+            - GRID_TIMEOUT=${GRID_TIMEOUT}
+            - GRID_BROWSER_TIMEOUT=${GRID_TIMEOUT}
+            - GRID_MAX_SESSION=${GRID_MAX_SESSION}
+            - JAVA_OPTS=-Dwebdriver.chrome.whitelistedIps=
+        stdin_open: true
+        tty: true

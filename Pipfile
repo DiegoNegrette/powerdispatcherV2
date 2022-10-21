@@ -9,9 +9,15 @@ selenium = "*"
 django-environ = "*"
 django-debug-toolbar = "*"
 django-model-utils = "*"
+django-solo = "*"
+celery = "*"
+django-celery-beat = "*"
+watchdog = "*"
+ipdb = "*"
+django-appconf = "*"
 
 [dev-packages]
 flake8 = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.10"

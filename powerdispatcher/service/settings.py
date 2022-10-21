@@ -30,13 +30,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'powerdispatcher.apps.PowerdispatcherConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
+    'solo',
+    # 'powerdispatcher.apps.PowerdispatcherConfig',
+    'powerdispatcher'
 ]
 
 MIDDLEWARE = [
@@ -130,6 +133,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# ------------ Celery
+APP_VHOST = env.str('APP_VHOST', default='powerdispatch')
+CELERY_BROKER_URL = env.str('CELERY_BROKER_URL', f'pyamqp://rabbitmq:rabbitmq@rabbitmq:5672/{APP_VHOST}')  # noqa
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+CELERY_ALWAYS_EAGER = env.bool('DJ_CELERY_TASK_ALWAYS_EAGER', default=False)
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_IGNORE_RESULT = True
+CELERY_DEFAULT_QUEUE = 'default'
+CELERYD_PREFETCH_MULTIPLIER = 1
+CELERY_ACKS_LATE = True
+
+HEADLESS = env.bool('HEADLESS', default=True)
+BROWSER = env.str('BROWSER', default='chrome')
+CONNECTION_TYPE = env.str('CONNECTION_TYPE', default='remote')
+WEB_DRIVER_URL = env.str('WEB_DRIVER_URL', default='')
+WEB_DRIVER_PATH = env.str('WEB_DRIVER_PATH', default='/chromedriver')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
