@@ -42,22 +42,7 @@ services:
         environment:
             - DJANGO_SETTINGS_MODULE=service.settings
 
-    # celery-worker:
-    #     restart: on-failure
-    #     image: django-fbbot
-    #     env_file:
-    #         - .env.dev
-    #         - .env
-    #     build:
-    #         context: ./
-    #     volumes:
-    #         - ./:/code
-    #     command: >
-    #         bash -c ' pipenv install --system --skip-lock --dev && sleep 14 && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A service worker --concurrency 4 -O fair --beat --scheduler django -l INFO'
-    #     depends_on:
-    #         - rabbitmq
-
-    celery-worker-test:
+    celery-worker:
         restart: on-failure
         image: django-powerdispatcher
         env_file:
@@ -67,12 +52,26 @@ services:
         volumes:
             - ./:/code
         command: >
-            bash -c '
-            pipenv install --system --skip-lock --dev &&
-            sleep 14 &&
-            watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A service worker --concurrency 2 -O fair -Q main_queue -l INFO'
+            bash -c ' pipenv install --system --skip-lock --dev && sleep 14 && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A service worker --concurrency 4 -O fair --beat --scheduler django -l INFO'
         depends_on:
             - rabbitmq
+
+    # celery-worker-test:
+    #     restart: on-failure
+    #     image: django-powerdispatcher
+    #     env_file:
+    #         - .env
+    #     build:
+    #         context: ./
+    #     volumes:
+    #         - ./:/code
+    #     command: >
+    #         bash -c '
+    #         pipenv install --system --skip-lock --dev &&
+    #         sleep 14 &&
+    #         watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A service worker --concurrency 2 -O fair -Q main_queue -l INFO'
+    #     depends_on:
+    #         - rabbitmq
 
     chrome:
         image: selenium/node-chrome:4.5.0-20221017
