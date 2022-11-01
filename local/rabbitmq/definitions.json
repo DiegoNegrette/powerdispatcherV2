@@ -1,0 +1,30 @@
+{
+	"rabbit_version": "3.8.12",
+	"users": [
+		{
+			"name": "rabbitmq",
+			"password_hash": "kI3GCpqIUfFLjdLzagvqrG6EeYY68XIf+Uz6zpifKXXNhhrZ",
+			"hashing_algorithm": "rabbit_password_hashing_sha256",
+			"tags": "administrator"
+		}
+	],
+	"vhosts": [
+		{
+			"name": "powerdispatch"
+		}
+	],
+	"permissions": [
+		{
+			"user": "rabbitmq",
+			"vhost": "powerdispatch",
+			"configure": ".*",
+			"write": ".*",
+			"read": ".*"
+		}
+	],
+	"parameters": [],
+	"policies": [],
+	"queues": [],
+	"exchanges": [],
+	"bindings": []
+}
