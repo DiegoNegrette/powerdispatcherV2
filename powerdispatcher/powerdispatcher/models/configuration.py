@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from solo.models import SingletonModel
 
 
@@ -9,21 +10,25 @@ class ProjectConfiguration(SingletonModel):
 
     # TODO might need to add max scraping days
     powerdispatch_account = models.CharField(
+        default='Account placeholder',
         max_length=100,
         verbose_name='Account id used to connect to powerdispatch app'
     )
 
     powerdispatch_username = models.CharField(
+        default='Username placeholder',
         max_length=100,
         verbose_name='Account username used to connect to powerdispatch app'
     )
 
     powerdispatch_password = models.CharField(
+        default='Account placeholder',
         max_length=100,
         verbose_name='Account password used to connect to powerdispatch app'
     )
 
     first_scraping_date = models.DateField(
+        default=timezone.now,
         verbose_name='All scraped records will start from this date'
     )
 
