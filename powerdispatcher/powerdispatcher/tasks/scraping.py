@@ -166,7 +166,6 @@ def scrape_and_upsert_powerdispatch_tickets():
     scraper.save(update_fields=["scraped_tickets", "added_tickets"])
 
 
-
 @app.task(queue=queue_name)
 def scrape_and_upsert_powerdispatch_job_descriptions():
     pass
