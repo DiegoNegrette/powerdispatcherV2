@@ -52,7 +52,7 @@ services:
         volumes:
             - ./:/code
         command: >
-            bash -c ' pipenv install --system --skip-lock --dev && sleep 14 && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A service worker --concurrency 4 -O fair --beat --scheduler django -l INFO'
+            bash -c ' pipenv install --system --skip-lock --dev && sleep 14 && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A service worker --concurrency 4 -O fair -Q main_queue --beat --scheduler django -l INFO'
         depends_on:
             - rabbitmq
 

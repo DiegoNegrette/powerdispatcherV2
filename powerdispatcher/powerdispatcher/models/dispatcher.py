@@ -6,7 +6,7 @@ from powerdispatcher.models import ModifiedTimeStampMixin
 
 class Dispatcher(ModifiedTimeStampMixin, TimeStampedModel):
 
-    user = models.CharField(max_length=255)
+    user = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
@@ -18,4 +18,4 @@ class Dispatcher(ModifiedTimeStampMixin, TimeStampedModel):
         unique_together = ['user', 'name']
 
     def __str__(self):
-        return f"{self.name} @{self.user}"
+        return f"{self.name}"

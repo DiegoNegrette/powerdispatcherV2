@@ -5,7 +5,7 @@ from powerdispatcher.models import ModifiedTimeStampMixin
 
 
 class Customer(ModifiedTimeStampMixin, TimeStampedModel):
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=10)
 
     class Meta:
         verbose_name_plural = 'Customers'

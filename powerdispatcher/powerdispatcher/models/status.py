@@ -2,13 +2,14 @@ from django.db import models
 from model_utils.models import TimeStampedModel
 
 from powerdispatcher.models import ModifiedTimeStampMixin
-from powerdispatcher.models.status_category import StatusCategory
 
 
 class Status(ModifiedTimeStampMixin, TimeStampedModel):
-    status_category = models.ForeignKey(StatusCategory, on_delete=models.PROTECT)  # noqa
-    who_cancelled = models.CharField(max_length=255)
-    why_cancelled = models.CharField(
+    name = models.CharField(max_length=20)
+    who_canceled = models.CharField(
+        max_length=255, null=True, blank=True
+    )
+    why_canceled = models.CharField(
         max_length=255, null=True, blank=True
     )
 
@@ -17,4 +18,4 @@ class Status(ModifiedTimeStampMixin, TimeStampedModel):
         ordering = ('-id',)
 
     def __str__(self):
-        return self.status_category.name
+        return self.name

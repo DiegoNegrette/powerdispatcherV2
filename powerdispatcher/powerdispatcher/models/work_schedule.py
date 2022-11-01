@@ -1,12 +1,12 @@
 from django.db import models
 from model_utils.models import TimeStampedModel
 
-from powerdispatcher.models import Branch, Calendar, ModifiedTimeStampMixin
+from powerdispatcher.models import Branch, Date, ModifiedTimeStampMixin
 
 
 class WorkSchedule(ModifiedTimeStampMixin, TimeStampedModel):
 
-    date = models.ForeignKey(Calendar, on_delete=models.CASCADE)
+    date = models.ForeignKey(Date, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     technician_availability = models.BooleanField(default=True)
     open_day = models.TimeField(

@@ -3,8 +3,8 @@ from model_utils.models import TimeStampedModel
 
 from powerdispatcher.models import (
     Branch,
-    Calendar,
     Customer,
+    Date,
     Dispatcher,
     JobDescription,
     Location,
@@ -16,7 +16,7 @@ from powerdispatcher.models import (
 
 class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
 
-    powerdispatcher_ticket_id = models.CharField(max_length=255)
+    powerdispatch_ticket_id = models.CharField(max_length=5)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     status = models.ForeignKey(Status, on_delete=models.PROTECT)
     technician = models.ForeignKey(Technician, on_delete=models.PROTECT)
@@ -27,11 +27,15 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
         Dispatcher, on_delete=models.PROTECT, related_name='tickets_created'
     )
     closed_by = models.ForeignKey(
-        Dispatcher, on_delete=models.PROTECT, related_name='tickets_closed'
+        Dispatcher,
+        on_delete=models.PROTECT,
+        related_name='tickets_closed',
+        null=True,
+        blank=True
     )
     branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
     zip_code = models.ForeignKey(Location, on_delete=models.PROTECT)
-    address = models.CharField(max_length=255)
+    address = models.TextField(null=True, blank=True)
     credit_payment = models.DecimalField(
         max_digits=7, decimal_places=2, default=0
     )
@@ -41,7 +45,7 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
     technician_parts = models.CharField(max_length=255)
     company_parts = models.CharField(max_length=255)
 
-    job_date = models.ForeignKey(Calendar, on_delete=models.PROTECT)
+    job_date = models.ForeignKey(Date, on_delete=models.PROTECT)
 
     created_at = models.DateTimeField()
     sent_at = models.DateTimeField(null=True, blank=True)
@@ -54,9 +58,9 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
         ordering = ('-created_at',)
         constraints = [
             models.UniqueConstraint(
-                fields=['powerdispatcher_ticket_id'], name='powerdispatcher_ticket_unique'  # noqa
+                fields=['powerdispatch_ticket_id'], name='powerdispatch_ticket_unique'  # noqa
             )
         ]
 
     def __str__(self):
-        return f'{self.powerdispatcher_ticket_id} - {self.status}'
+        return f'{self.powerdispatch_ticket_id} - {self.status}'

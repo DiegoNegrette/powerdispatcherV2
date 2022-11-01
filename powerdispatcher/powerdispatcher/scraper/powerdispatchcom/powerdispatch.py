@@ -16,10 +16,6 @@ from powerdispatcher.models import ProjectConfiguration
 from powerdispatcher.scraper.base_mixing import ScraperBaseMixin
 from powerdispatcher.utils import get_datetime_obj_from_str
 
-ACCOUNT = '20513'
-USERNAME = 'victor'
-PASSWORD = 'Victor123'
-
 
 class PowerdispatchSiteScraper(ScraperBaseMixin):
 
@@ -200,8 +196,9 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             currently_selected_date_str = (
                 f"{DUMMY_DAY} {table_month.text} {table_year.text}"
             )
-            currently_selected_date_obj = datetime.datetime. \
-                strptime(currently_selected_date_str, "%d %B %Y")
+            currently_selected_date_obj = datetime.datetime.strptime(
+                currently_selected_date_str, "%d %B %Y"
+            ).date()
 
             if currently_selected_date_obj > input_date:
                 prev_month_btn.click()
@@ -268,13 +265,6 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             format(ticket_id=ticket_id)
         self.navigate_to(ticket_permalink)
 
-        # ID PAGE
-        """
-        TODO ask JT what he said about adding this info dynamically
-        THIS LOGIC SHOULD BE ADDED IN UPSERT SINCE THIS METHOD SHOULD ONLY
-        FOCUS IN INFO EXTRACTION
-        """
-
         created_datetime_str = self.driver.find_element(
             By.XPATH,
             "//span[contains(@class, 'datetime-month')]/parent::td"
@@ -307,8 +297,6 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         status_element = self.driver.find_element(By.ID, "ddStatus")
         status_selector = Select(status_element)
         status = status_selector.first_selected_option.text
-
-        # if status.lower() != 'canceled':
 
         technician_parts = self.driver. \
             find_element(By.NAME, "txtParts").get_attribute("value")
@@ -374,8 +362,6 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         closed_time = None
         closed_by_titles = ['job canceled', 'job closed', 'job delayed']
         for comment_child_element in comments_child_elements:
-            # import ipdb
-            # ipdb.set_trace()
             element_class = comment_child_element.get_attribute("class")
             if element_class == "date-bar":
                 date_label = comment_child_element.text
@@ -383,7 +369,8 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 comment_title = comment_child_element.find_element(
                     By.XPATH, "./tbody/tr/td[2]/div[2]/div/span"
                 ).text.strip()
-                if comment_title.lower() == "job comment created":
+                lower_comment_title = comment_title.lower()
+                if lower_comment_title == "job comment created":
                     comment_content = comment_child_element.find_element(
                         By.XPATH,
                         "./tbody/tr/td[2]/div[2]/div/pre"
@@ -396,14 +383,37 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                     if match_found and not closed_time:
                         closed_time = date_label + " " + comment_child_element. \
                             find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
-                elif comment_title.lower() == "conference created" \
-                        and not accepted_time:
-                    first_call_time = date_label + " " + comment_child_element. \
-                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa
-                elif comment_title.lower() == "job created":
+                    match_found = re.search(r'CLOSED job', comment_content)
+                    if match_found and not closed_time:
+                        closed_time = date_label + " " + comment_child_element. \
+                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
+                    if technician:
+                        match_found = re.search(
+                            r'To: {techinian}'.format(techinian=technician),  # noqa
+                            comment_content
+                        )
+                        if match_found and not sent_time:
+                            sent_time = date_label + " " + comment_child_element. \
+                                find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
+                elif lower_comment_title == "job created":
                     created_by = comment_child_element. \
                         find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]").text  # noqa
-                elif comment_title.lower() in closed_by_titles \
+                    comment_content = comment_child_element.find_element(
+                        By.XPATH,
+                        "./tbody/tr/td[2]/div[2]/div/pre"
+                    ).text
+                    match_found = re.search(
+                        r'Job sent to {techinian}'.format(techinian=technician),  # noqa
+                        comment_content
+                    )
+                    if match_found and not sent_time:
+                        sent_time = date_label + " " + comment_child_element. \
+                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
+                elif lower_comment_title == "conference created" \
+                        and not sent_time:
+                    first_call_time = date_label + " " + comment_child_element. \
+                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa
+                elif lower_comment_title in closed_by_titles \
                         and not closed_by:
                         closed_by = comment_child_element. \
                             find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]").text  # noqa
@@ -434,8 +444,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             )
 
         ticket_data = {
-            "powerdispatcher_ticket_id": ticket_id,
-            "ticket_permalink": ticket_permalink,
+            "powerdispatch_ticket_id": ticket_id,
             "customer_phone": customer_phone_str,
             "address": address,  # TODO THIS SHOULD BE CLEANED BEFORE UPSERT
             "zip_code": zip_code,  # TODO THIS SHOULD BE CLEANED BEFORE UPSERT

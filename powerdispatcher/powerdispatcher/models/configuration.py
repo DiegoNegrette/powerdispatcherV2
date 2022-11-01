@@ -23,6 +23,10 @@ class ProjectConfiguration(SingletonModel):
         verbose_name='Account password used to connect to powerdispatch app'
     )
 
+    first_scraping_date = models.DateField(
+        verbose_name='All scraped records will start from this date'
+    )
+
     class Meta:
         verbose_name = 'Project configurations'
         verbose_name_plural = 'Project configurations'

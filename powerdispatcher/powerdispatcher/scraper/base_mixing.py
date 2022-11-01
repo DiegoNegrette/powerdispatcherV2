@@ -2,7 +2,6 @@ import logging
 import time
 
 from django.conf import settings
-from django.utils import dateformat, timezone
 
 logger = logging.getLogger('scraper')
 
@@ -31,8 +30,7 @@ class ScraperBaseMixin:
         if self.account_identifier:
             webdriver_host = self.webdriver_container_host or ''
             webdriver_port = self.webdriver_container_port or ''
-            _now = dateformat.format(timezone.now(), 'Y-m-d H:i:s')
-            _id = f'[{_now}][{webdriver_host}:{webdriver_port}]' \
+            _id = f'[{webdriver_host}:{webdriver_port}]' \
                   f'[{self.account_identifier}]{_label}'
         logger.info(f'{_id} {obj}')
 

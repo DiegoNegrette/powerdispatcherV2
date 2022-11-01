@@ -7,7 +7,8 @@ LOGGING = {
             'style': '{',
         },
         'simple': {
-            'format': '{levelname} {message}',
+            'format': '{levelname} [{asctime}] {message}',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
             'style': '{',
         },
     },

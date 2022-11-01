@@ -1,19 +1,7 @@
-from django.contrib import admin
-
-from powerdispatcher.models import (
-    Customer,
-    Dispatcher,
-    ProjectConfiguration,
-    Status,
-    StatusCategory,
-    Technician,
-    Ticket,
+from powerdispatcher.admin.admin import (
+    TicketAdmin
 )
 
-admin.site.register(Customer)
-admin.site.register(Dispatcher)
-admin.site.register(Status)
-admin.site.register(StatusCategory)
-admin.site.register(Technician)
-admin.site.register(Ticket)
-admin.site.register(ProjectConfiguration)
+__all__ = [
+    TicketAdmin,
+]
