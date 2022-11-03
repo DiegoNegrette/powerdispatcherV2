@@ -157,9 +157,9 @@ class PowerdispatchManager:
         }
         return job_description_obj_dict
 
-    def upsert_job_descriptions(self, job_description):
+    def upsert_job_descriptions(self, job_description_info):
         job_description_obj_dict \
-            = self.get_obj_dict_from_job_description_info(job_description)
+            = self.get_obj_dict_from_job_description_info(job_description_info)
         description = job_description_obj_dict.pop("description")
         job_description, created = JobDescription.objects.get_or_create(
             description=description,
