@@ -15,16 +15,16 @@ from powerdispatcher.models import (
 
 class PowerdispatchManager:
 
-    def clean_phone(self, phone_str):
-        phone_str = phone_str.strip()
-        phone_str = re.sub(r"\D", '', phone_str)
+    def clean_phone(self, input_phone_str):
+        new_phone_str = re.sub(r"\D", '', input_phone_str)
+        phone_str = new_phone_str.strip()
         PHONE_MAX_LENGTH = 10
         phone_str = phone_str[-PHONE_MAX_LENGTH:]
         return phone_str
 
-    def clean_zip_code(self, zip_code):
-        zip_code = zip_code.strip()
-        zip_code = re.sub(r"\D", '', zip_code)
+    def clean_zip_code(self, input_zip_code):
+        new_zip_code = re.sub(r"\D", '', input_zip_code)
+        zip_code = new_zip_code.strip()
         return zip_code
 
     def get_zip_code(self, zip_code):
@@ -45,14 +45,15 @@ class PowerdispatchManager:
         return status_obj
 
     def upsert_customer(self, phone_str):
-        phone = self.clean_phone(phone_str=phone_str)
+        phone = self.clean_phone(input_phone_str=phone_str)
         customer, _ = Customer.objects.get_or_create(
             phone=phone
         )
         return customer
 
     def upsert_job_description(self, job_description_str):
-        description = self.clean_description(description=job_description_str)
+        description \
+            = self.clean_description(input_description=job_description_str)
         job_description_obj, _ = JobDescription.objects.get_or_create(
             description=description
         )
@@ -138,14 +139,14 @@ class PowerdispatchManager:
         )
         return ticket, created
 
-    def clean_description(self, description):
-        description = re.sub(r"\[.+\]", '', description)
-        description = description.strip()
+    def clean_description(self, input_description):
+        new_description = re.sub(r"\[.+\]", '', input_description)
+        description = new_description.strip()
         return description
 
     def get_obj_dict_from_job_description_info(self, job_description_info):
         description = self.clean_description(
-            description=job_description_info["description"]
+            input_description=job_description_info["description"]
         )
         enabled = False
         if job_description_info["enabled"] == "Enabled":
