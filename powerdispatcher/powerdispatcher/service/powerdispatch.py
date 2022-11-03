@@ -139,8 +139,8 @@ class PowerdispatchManager:
         return ticket, created
 
     def clean_description(self, description):
-        description = description.strip()
         description = re.sub(r"\[.+\]", '', description)
+        description = description.strip()
         return description
 
     def get_obj_dict_from_job_description_info(self, job_description_info):
