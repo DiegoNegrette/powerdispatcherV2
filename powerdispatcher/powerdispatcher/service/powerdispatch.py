@@ -43,13 +43,6 @@ class PowerdispatchManager:
             why_canceled=why_canceled,
         )
         return status_obj
-    # def get_status(self, status_str, who_canceled, why_canceled):
-    #     status_obj = Status.objects.get(
-    #         name=status_str,
-    #         who_canceled=who_canceled,
-    #         why_canceled=why_canceled,
-    #     )
-    #     return status_obj
 
     def upsert_customer(self, phone_str):
         phone = self.clean_phone(phone_str=phone_str)
@@ -58,16 +51,15 @@ class PowerdispatchManager:
         )
         return customer
 
-    # TODO MUST CHECK IF ITS REPRESENTED BY ITS DESCRIPTION OR CATEGORY IN
-    # TICKET INFO
     def upsert_job_description(self, job_description_str):
+        description = self.clean_description(description=job_description_str)
         job_description_obj, _ = JobDescription.objects.get_or_create(
-            description=job_description_str
+            description=description
         )
         return job_description_obj
 
     def upsert_dispatcher(self, dispatcher_str):
-        dispatcher_obj, created = Dispatcher.objects.get_or_create(
+        dispatcher_obj, _ = Dispatcher.objects.get_or_create(
             name=dispatcher_str
         )
         return dispatcher_obj
@@ -145,3 +137,38 @@ class PowerdispatchManager:
             defaults=ticket_obj_dict,
         )
         return ticket, created
+
+    def clean_description(self, description):
+        description = description.strip()
+        description = re.sub(r"\[.+\]", '', description)
+        return description
+
+    def get_obj_dict_from_job_description_info(self, job_description_info):
+        description = self.clean_description(
+            description=job_description_info["description"]
+        )
+        enabled = False
+        if job_description_info["enabled"] == "Enabled":
+            enabled = True
+        job_description_obj_dict = {
+            "description": description,
+            "category": job_description_info["category"],
+            "enabled": enabled,
+        }
+        return job_description_obj_dict
+
+    def upsert_job_descriptions(self, job_description):
+        job_description_obj_dict \
+            = self.get_obj_dict_from_job_description_info(job_description)
+        description = job_description_obj_dict.pop("description")
+        job_description, created = JobDescription.objects.get_or_create(
+            description=description,
+            defaults=job_description_obj_dict,
+        )
+
+        if not created:
+            job_description.category = job_description_obj_dict["category"]
+            job_description.enabled = job_description_obj_dict["enabled"]
+            job_description.save(update_fields=["category", "enabled"])
+
+        return job_description, created

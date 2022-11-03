@@ -16,3 +16,7 @@ def months_difference_between_dates(end_date, start_date):
     res_months = delta.months + (delta.years * 12)
 
     return res_months
+
+
+def trunc_date(someDate):
+    return someDate.replace(day=1)

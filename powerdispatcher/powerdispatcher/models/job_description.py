@@ -6,7 +6,8 @@ from powerdispatcher.models import ModifiedTimeStampMixin
 
 class JobDescription(ModifiedTimeStampMixin, TimeStampedModel):
     description = models.CharField(max_length=255)
-    category = models.CharField(max_length=255)
+    category = models.CharField(max_length=255, null=True, blank=True)
+    enabled = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = 'Job Descriptions'

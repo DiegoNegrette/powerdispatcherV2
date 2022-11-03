@@ -24,14 +24,11 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-        },
         'file_scraper': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': 'logs/scraper.log',
+            'formatter': 'simple',
         },
     },
     'loggers': {

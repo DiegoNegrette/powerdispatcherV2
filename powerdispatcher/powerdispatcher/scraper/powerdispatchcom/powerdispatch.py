@@ -14,7 +14,7 @@ from powerdispatcher.conf import settings
 
 from powerdispatcher.models import ProjectConfiguration
 from powerdispatcher.scraper.base_mixing import ScraperBaseMixin
-from powerdispatcher.utils import get_datetime_obj_from_str
+from powerdispatcher.utils import get_datetime_obj_from_str, trunc_date
 
 
 class PowerdispatchSiteScraper(ScraperBaseMixin):
@@ -191,7 +191,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             next_month_btn = table_header. \
                 find_element(By.XPATH, "./div[@class='picker__nav--next']")
 
-            DUMMY_DAY = input_date.day
+            DUMMY_DAY = 1
 
             currently_selected_date_str = (
                 f"{DUMMY_DAY} {table_month.text} {table_year.text}"
@@ -200,9 +200,13 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 currently_selected_date_str, "%d %B %Y"
             ).date()
 
-            if currently_selected_date_obj > input_date:
+            first_day_of_currently_selected \
+                = trunc_date(currently_selected_date_obj)
+            first_day_of_input_date = trunc_date(input_date)
+
+            if first_day_of_currently_selected > first_day_of_input_date:
                 prev_month_btn.click()
-            elif currently_selected_date_obj < input_date:
+            elif first_day_of_currently_selected < first_day_of_input_date:
                 next_month_btn.click()
             else:
                 break
@@ -211,8 +215,11 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         table_body = self.driver. \
             find_element(By.ID, f"{table_identifier}_table")
 
+        input_date_str = input_date.strftime("%Y-%m-%d")
+
         target_day = table_body.find_element(
-            By.XPATH, f"./tbody/descendant::div[text()='{input_date.day}']"
+            By.XPATH,
+            f"./tbody/descendant::div[@aria-label='{input_date_str}']"
         )
 
         target_day.click()
@@ -383,13 +390,9 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                     if match_found and not closed_time:
                         closed_time = date_label + " " + comment_child_element. \
                             find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
-                    match_found = re.search(r'CLOSED job', comment_content)
-                    if match_found and not closed_time:
-                        closed_time = date_label + " " + comment_child_element. \
-                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
                     if technician:
                         match_found = re.search(
-                            r'To: {techinian}'.format(techinian=technician),  # noqa
+                            r'To: ',  # noqa
                             comment_content
                         )
                         if match_found and not sent_time:
@@ -446,10 +449,10 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         ticket_data = {
             "powerdispatch_ticket_id": ticket_id,
             "customer_phone": customer_phone_str,
-            "address": address,  # TODO THIS SHOULD BE CLEANED BEFORE UPSERT
-            "zip_code": zip_code,  # TODO THIS SHOULD BE CLEANED BEFORE UPSERT
+            "address": address,
+            "zip_code": zip_code,
             "technician": technician,
-            "job_description": job_description_str,  # TODO THIS SHOULD BE CLEANED BEFORE UPSERT  # noqa
+            "job_description": job_description_str,
             "company": company,
             "job_date": job_date_obj,
             "status": status,
@@ -469,6 +472,31 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         }
 
         return ticket_data
+
+    def get_job_descriptions(self):
+        all_job_descriptions_permalink \
+            = "https://lite.serviceslogin.com/settings_jobdesc.php?enabled=2"
+        self.navigate_to(all_job_descriptions_permalink)
+        job_description_rows = self.driver.find_elements(
+            By.XPATH, "//table[@id='settings-item-table']/descendant::tr"
+        )
+        job_description_rows = job_description_rows[1:]
+
+        job_descriptions = []
+        for job_description_row in job_description_rows:
+            data = job_description_row.find_elements(
+                By.XPATH, "./descendant::td"
+            )
+            description = data[0].text
+            category = data[2].text
+            enabled = data[3].find_element(By.XPATH, "./descendant::span").text
+            job_description_dict = {
+                "description": description,
+                "category": category,
+                "enabled": enabled,
+            }
+            job_descriptions.append(job_description_dict)
+        return job_descriptions
 
     def close_driver(self):
         self.log('Closing driver')

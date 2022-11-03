@@ -34,7 +34,7 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
         blank=True
     )
     branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
-    zip_code = models.ForeignKey(Location, on_delete=models.PROTECT)
+    zip_code = models.ForeignKey(Location, on_delete=models.PROTECT, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     credit_payment = models.DecimalField(
         max_digits=7, decimal_places=2, default=0

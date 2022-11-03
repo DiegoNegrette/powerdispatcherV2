@@ -28,13 +28,18 @@ class ProjectConfiguration(SingletonModel):
     )
 
     first_scraping_date = models.DateField(
-        default=timezone.now,
+        default=timezone.localtime,
         verbose_name='All scraped records will start from this date'
     )
 
+    max_scraping_days = models.IntegerField(
+        default=7,
+        verbose_name='Max amount of days to scrape'
+    )
+
     class Meta:
-        verbose_name = 'Project configurations'
+        verbose_name = 'Project configuration'
         verbose_name_plural = 'Project configurations'
 
     def __str__(self):
-        return 'Project configurations'
+        return 'Project configuration'
