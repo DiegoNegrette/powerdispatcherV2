@@ -64,7 +64,7 @@ def get_tickets_info(ticket_ids=[], debug=False):
 def scrape_and_upsert_powerdispatch_tickets():
 
     last_scraper_log = ScraperLog.objects \
-        .filter(status=ScraperLog.STATUS_SUCCESS).last()
+        .filter(status=ScraperLog.STATUS_SUCCESS).first()
 
     MIN_DAYS_FROM_TODAY = 2
     current_date = timezone.localtime().date()
@@ -124,6 +124,8 @@ def scrape_and_upsert_powerdispatch_tickets():
 
         ticket_ids = scraper.get_ticket_ids_from_search_result()
 
+        # ticket_ids = ticket_ids[:4]
+
         # TODO THIS COULD BE A GOOD PLACE TO SELECT ONLY NEW TICKETS
         # Wont do it since number of tickets is a growing number
         # Repeated tickets should not be found
@@ -159,6 +161,7 @@ def scrape_and_upsert_powerdispatch_tickets():
     new_tickets = 0
     try:
         for idx, ticket_info in enumerate(tickets_info):
+            ticket_id = ticket_info["powerdispatch_ticket_id"]
             log_info(
                 f"{idx+1}/{len(ticket_ids)} Upserting ticket {ticket_id}",
                 scraper_log=scraper_log
