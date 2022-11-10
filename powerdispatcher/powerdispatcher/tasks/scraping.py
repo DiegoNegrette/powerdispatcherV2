@@ -124,8 +124,6 @@ def scrape_and_upsert_powerdispatch_tickets():
 
         ticket_ids = scraper.get_ticket_ids_from_search_result()
 
-        ticket_ids = ticket_ids[:4]
-
         # TODO THIS COULD BE A GOOD PLACE TO SELECT ONLY NEW TICKETS
         # Wont do it since number of tickets is a growing number
         # Repeated tickets should not be found
