@@ -86,7 +86,7 @@ def scrape_and_upsert_powerdispatch_tickets():
 
     max_scraping_days = project_configuration.max_scraping_days
     days_to_be_scraped = (to_date - from_date).days
-    if max_scraping_days and days_to_be_scraped > max_scraping_days:
+    if max_scraping_days and days_to_be_scraped >= max_scraping_days:
         to_date = from_date + timezone.timedelta(days=max_scraping_days-1)
 
     scraper_log = ScraperLog.objects.create(
