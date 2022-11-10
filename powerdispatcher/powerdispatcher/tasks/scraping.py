@@ -71,7 +71,7 @@ def scrape_and_upsert_powerdispatch_tickets():
     to_date = current_date - timezone.timedelta(days=MIN_DAYS_FROM_TODAY)
     project_configuration = ProjectConfiguration.objects.get()
     if last_scraper_log:
-        from_date = last_scraper_log.to_date
+        from_date = last_scraper_log.to_date + timezone.timedelta(days=1)
     elif project_configuration.first_scraping_date:
         from_date = project_configuration.first_scraping_date
     else:
