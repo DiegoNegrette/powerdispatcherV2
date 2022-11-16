@@ -5,6 +5,7 @@ from powerdispatcher.models import ModifiedTimeStampMixin
 
 
 class Source(ModifiedTimeStampMixin, TimeStampedModel):
+    id = models.PositiveBigIntegerField(primary_key=True)
     name = models.TextField()
     category = models.TextField()
 
