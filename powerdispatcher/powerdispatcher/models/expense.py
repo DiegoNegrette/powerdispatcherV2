@@ -15,4 +15,4 @@ class Expense(ModifiedTimeStampMixin, TimeStampedModel):
         ordering = ('-date',)
 
     def __str__(self):
-        return f"{self.branch.name} - {self.source.expense} - {self.amount}"
+        return f"{self.branch.name} - {self.source.name} - {self.amount}"
