@@ -71,7 +71,7 @@ def scrape_and_upsert_powerdispatch_tickets():
     to_date = current_date - timezone.timedelta(days=MIN_DAYS_FROM_TODAY)
     project_configuration = ProjectConfiguration.objects.get()
     if last_scraper_log:
-        from_date = last_scraper_log.to_date
+        from_date = last_scraper_log.to_date + timezone.timedelta(days=1)
     elif project_configuration.first_scraping_date:
         from_date = project_configuration.first_scraping_date
     else:
@@ -86,8 +86,8 @@ def scrape_and_upsert_powerdispatch_tickets():
 
     max_scraping_days = project_configuration.max_scraping_days
     days_to_be_scraped = (to_date - from_date).days
-    if max_scraping_days and days_to_be_scraped > max_scraping_days:
-        to_date = from_date + timezone.timedelta(days=max_scraping_days)
+    if max_scraping_days and days_to_be_scraped >= max_scraping_days:
+        to_date = from_date + timezone.timedelta(days=max_scraping_days-1)
 
     scraper_log = ScraperLog.objects.create(
         from_date=from_date,
@@ -123,8 +123,6 @@ def scrape_and_upsert_powerdispatch_tickets():
         log_info("Scraping ticket ids", scraper_log=scraper_log)
 
         ticket_ids = scraper.get_ticket_ids_from_search_result()
-
-        # ticket_ids = ticket_ids[:4]
 
         # TODO THIS COULD BE A GOOD PLACE TO SELECT ONLY NEW TICKETS
         # Wont do it since number of tickets is a growing number
