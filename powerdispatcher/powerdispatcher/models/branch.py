@@ -6,6 +6,8 @@ from powerdispatcher.models import ModifiedTimeStampMixin
 
 class Branch(ModifiedTimeStampMixin, TimeStampedModel):
 
+    id = models.AutoField(primary_key=True)
+
     name = models.CharField(max_length=255)
     city = models.CharField(max_length=255, null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)

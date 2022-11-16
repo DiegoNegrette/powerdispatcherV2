@@ -5,6 +5,7 @@ from powerdispatcher.models import Branch, Date, ModifiedTimeStampMixin, Source
 
 
 class Expense(ModifiedTimeStampMixin, TimeStampedModel):
+    id = models.AutoField(primary_key=True)
     date = models.ForeignKey(Date, on_delete=models.PROTECT)
     branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
     source = models.ForeignKey(Source, on_delete=models.PROTECT)

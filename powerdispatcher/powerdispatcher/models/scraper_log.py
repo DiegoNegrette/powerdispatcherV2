@@ -18,6 +18,7 @@ class ScraperLog(ModifiedTimeStampMixin, TimeStampedModel):
         (STATUS_SUCCESS, STATUS_SUCCESS),
     )
 
+    id = models.AutoField(primary_key=True)
     from_date = models.DateField()
     to_date = models.DateField()
 

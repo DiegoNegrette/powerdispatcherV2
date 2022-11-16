@@ -6,6 +6,7 @@ from powerdispatcher.models import Branch, Date, ModifiedTimeStampMixin
 
 class WorkSchedule(ModifiedTimeStampMixin, TimeStampedModel):
 
+    id = models.AutoField(primary_key=True)
     date = models.ForeignKey(Date, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     technician_availability = models.BooleanField(default=True)

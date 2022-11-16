@@ -16,6 +16,7 @@ from powerdispatcher.models import (
 
 class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
 
+    id = models.AutoField(primary_key=True)
     powerdispatch_ticket_id = models.CharField(max_length=5)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     status = models.ForeignKey(Status, on_delete=models.PROTECT)
@@ -34,7 +35,9 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
         blank=True
     )
     branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
-    zip_code = models.ForeignKey(Location, on_delete=models.PROTECT, null=True, blank=True)
+    zip_code = models.ForeignKey(
+        Location, on_delete=models.PROTECT, null=True, blank=True
+    )
     address = models.TextField(null=True, blank=True)
     credit_payment = models.DecimalField(
         max_digits=7, decimal_places=2, default=0

@@ -5,6 +5,7 @@ from powerdispatcher.models import ModifiedTimeStampMixin
 
 
 class Status(ModifiedTimeStampMixin, TimeStampedModel):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=20)
     who_canceled = models.CharField(
         max_length=255, null=True, blank=True

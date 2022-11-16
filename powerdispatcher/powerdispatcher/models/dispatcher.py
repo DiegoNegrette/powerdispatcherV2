@@ -6,6 +6,7 @@ from powerdispatcher.models import ModifiedTimeStampMixin
 
 class Dispatcher(ModifiedTimeStampMixin, TimeStampedModel):
 
+    id = models.AutoField(primary_key=True)
     user = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255)
     start_date = models.DateField(null=True, blank=True)
