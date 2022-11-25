@@ -9,11 +9,8 @@ class WorkSchedule(ModifiedTimeStampMixin, TimeStampedModel):
     id = models.AutoField(primary_key=True)
     date = models.ForeignKey(Date, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    technician_availability = models.BooleanField(default=True)
-    open_day = models.TimeField(
-        null=False,
-        blank=False,
-    )
+    technician_availability = models.IntegerField(default=0)
+    open_day = models.BooleanField(default=True)
     open_time = models.TimeField(
         null=False,
         blank=False,

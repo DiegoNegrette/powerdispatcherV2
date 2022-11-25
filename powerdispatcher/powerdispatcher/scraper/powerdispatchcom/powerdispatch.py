@@ -289,6 +289,9 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
 
         technician = self.driver.find_element(By.ID, "select2-ddTech-container").text  # noqa
 
+        if 'select a technician' in technician.lower():
+            technician = None
+
         company = self.driver.find_element(By.ID, "select2-ddJobCompany-container").text  # noqa
 
         zip_code = self.driver. \
@@ -339,19 +342,27 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         except NoSuchElementException:
             pass
 
-        who_canceled_element = self.driver. \
-            find_element(By.XPATH, "//*[@id='cancel_slide']/fieldset/select")
-        who_canceled_element_selector = Select(who_canceled_element)
+        if status == 'Cancel':
+            who_canceled_element = self.driver.find_element(
+                By.XPATH, "//*[@id='cancel_slide']/fieldset/select"
+            )
+            who_canceled_element_selector = Select(who_canceled_element)
 
-        try:
-            who_canceled_str = who_canceled_element_selector.first_selected_option.text  # noqa
-        except NoSuchElementException:
+            try:
+                selected_option = \
+                    who_canceled_element_selector.first_selected_option.text
+                who_canceled_str = selected_option if selected_option else None  # noqa
+            except NoSuchElementException:
+                who_canceled_str = None
+
+            why_canceled_element = self.driver.find_element(
+                By.XPATH, "//*[@id='cancel_slide']/fieldset/input"
+            )
+            why_canceled_str = why_canceled_element.get_attribute("value")
+            why_canceled_str = why_canceled_str if why_canceled_str else None
+        else:
             who_canceled_str = None
-
-        why_canceled_element = self.driver. \
-            find_element(By.XPATH, "//*[@id='cancel_slide']/fieldset/input")
-        why_canceled_str = why_canceled_element.get_attribute("value")
-        why_canceled_str = why_canceled_str if why_canceled_str else None
+            why_canceled_str = None
 
         # LOG PAGE
         logs_btn = self.driver.find_element(By.ID, "addjob-menu-comments")

@@ -7,6 +7,7 @@ from powerdispatcher.models import ModifiedTimeStampMixin
 class Technician(ModifiedTimeStampMixin, TimeStampedModel):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
+    short_name = models.CharField(max_length=255, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     city = models.TextField(null=True, blank=True)
     zip_code = models.CharField(max_length=5, null=True, blank=True)
