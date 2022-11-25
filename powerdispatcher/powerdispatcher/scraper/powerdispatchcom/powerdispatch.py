@@ -342,7 +342,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         except NoSuchElementException:
             pass
 
-        if status == 'Cancel':
+        if status == 'Canceled':
             who_canceled_element = self.driver.find_element(
                 By.XPATH, "//*[@id='cancel_slide']/fieldset/select"
             )
