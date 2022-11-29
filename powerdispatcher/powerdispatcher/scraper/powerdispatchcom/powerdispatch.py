@@ -235,9 +235,11 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         current_page = 1
         all_ticket_ids = []
         while current_page <= MAX_PAGES:
-            search_result_table = self.driver. \
-                find_element(By.ID, "search-result-table")
-
+            try:
+                search_result_table = self.driver. \
+                    find_element(By.ID, "search-result-table")
+            except NoSuchElementException:
+                return all_ticket_ids
             current_page_jobs = search_result_table. \
                 find_elements(By.XPATH, "./tbody[2]/tr")
 
