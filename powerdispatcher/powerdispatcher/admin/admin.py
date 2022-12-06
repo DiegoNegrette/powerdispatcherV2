@@ -25,9 +25,7 @@ from powerdispatcher.models import (
 
 admin.site.register(Branch)
 admin.site.register(Customer)
-admin.site.register(Date)
 admin.site.register(Dispatcher)
-admin.site.register(Expense)
 admin.site.register(JobDescription)
 admin.site.register(Location)
 admin.site.register(ProjectConfiguration, SingletonModelAdmin)
@@ -35,7 +33,16 @@ admin.site.register(Source)
 admin.site.register(ScraperLog)
 admin.site.register(Status)
 admin.site.register(Technician)
-admin.site.register(WorkSchedule)
+
+
+@admin.register(Date)
+class DateAdmin(admin.ModelAdmin):
+    search_fields = ['date']
+
+
+@admin.register(Expense)
+class ExpenseAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['date']
 
 
 @admin.register(Ticket)
@@ -78,3 +85,8 @@ class TicketAdmin(admin.ModelAdmin):
                 obj.powerdispatch_ticket_id
             )
     get_powerdispatch_ticket.short_description = 'Powerdispatch Id'
+
+
+@admin.register(WorkSchedule)
+class WorkScheduleAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['date']
