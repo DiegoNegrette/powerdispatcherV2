@@ -1,4 +1,4 @@
-zip_code_id,primary_city,county,state,state_short,country,latitude,longitude
+zip_code,primary_city,county,state,state_short,country,latitude,longitude
 501,Holtsville,Suffolk County,New York,NY,US,"40,81","-73,04"
 544,Holtsville,Suffolk County,New York,NY,US,"40,81","-73,04"
 601,Adjuntas,Adjuntas Municipio,Puerto Rico,PR,US,"18,16","-66,72"
