@@ -1,6 +1,6 @@
-import ipdb
 import traceback
 
+import ipdb
 from celery.utils.log import get_task_logger
 from django.utils import timezone
 # TOOLS FOR TESTING
@@ -8,12 +8,12 @@ from selenium.webdriver.common.action_chains import ActionChains  # noqa
 from selenium.webdriver.common.by import By  # noqa
 from selenium.webdriver.support import expected_conditions as EC  # noqa
 from selenium.webdriver.support.ui import WebDriverWait  # noqa
+from service.celery import app
 
 from powerdispatcher.models import ProjectConfiguration, ScraperLog
+from powerdispatcher.scraper.powerdispatchcom.powerdispatch import \
+    PowerdispatchSiteScraper
 from powerdispatcher.service import PowerdispatchManager
-from powerdispatcher.scraper.powerdispatchcom.powerdispatch \
-    import PowerdispatchSiteScraper
-from service.celery import app
 
 logger = get_task_logger('scraper')
 queue_name = 'main_queue'

@@ -31,7 +31,6 @@ admin.site.register(Location)
 admin.site.register(ProjectConfiguration, SingletonModelAdmin)
 admin.site.register(Source)
 admin.site.register(ScraperLog)
-admin.site.register(Status)
 admin.site.register(Technician)
 
 
@@ -85,6 +84,12 @@ class TicketAdmin(admin.ModelAdmin):
                 obj.powerdispatch_ticket_id
             )
     get_powerdispatch_ticket.short_description = 'Powerdispatch Id'
+
+
+@admin.register(Status)
+class StatusAdmin(admin.ModelAdmin):
+    search_fields = ['name', 'who_canceled', 'why_canceled']
+    list_display = ('id', 'name', 'who_canceled', 'why_canceled')
 
 
 @admin.register(WorkSchedule)

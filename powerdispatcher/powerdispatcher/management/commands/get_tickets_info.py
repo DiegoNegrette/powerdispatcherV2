@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from powerdispatcher.tasks import get_tickets_info
 from powerdispatcher.service import PowerdispatchManager
-
+from powerdispatcher.tasks import get_tickets_info
 
 TICKET_IDS = [
     "LMFD2",
