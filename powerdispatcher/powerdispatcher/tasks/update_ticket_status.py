@@ -26,7 +26,7 @@ def log_info(message, scraper_log=None):
 @app.task(queue_name=queue_name)
 def update_ticket_status(ticket_ids=[]):
     updated_tickets = []
-    MAX_TICKETS_TO_UPDATE = 5
+    MAX_TICKETS_TO_UPDATE = 100
     scraper = PowerdispatchSiteScraper()
     try:
         log_info("Initiating Webdriver")
