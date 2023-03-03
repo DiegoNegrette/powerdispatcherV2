@@ -403,7 +403,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         self.navigate_to(ticket_permalink)
 
         created_datetime_str = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
+            EC.visibility_of_element_located(
                 (
                     By.XPATH,
                     "//span[contains(@class, 'datetime-month')]/parent::td"
