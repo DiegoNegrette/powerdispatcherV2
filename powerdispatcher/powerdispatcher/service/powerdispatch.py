@@ -1,16 +1,8 @@
 import re
 
-from powerdispatcher.models import (
-    Branch,
-    Date,
-    Customer,
-    Dispatcher,
-    JobDescription,
-    Location,
-    Status,
-    Ticket,
-    Technician,
-)
+from powerdispatcher.models import (Branch, Customer, Date, Dispatcher,
+                                    JobDescription, Location, Status,
+                                    Technician, Ticket)
 
 
 class PowerdispatchManager:
@@ -94,7 +86,7 @@ class PowerdispatchManager:
             why_canceled=ticket_info["why_canceled"]
         )
         technician = self.upsert_technician(ticket_info["technician"])
-        job_description = self.upsert_job_description(ticket_info["job_description"])  # noqa
+        job_description = self.upsert_job_description(ticket_info["job_description"])
         created_by = self.upsert_dispatcher(ticket_info["created_by"])
         closed_by = None
         if ticket_info["closed_by"]:

@@ -17,7 +17,7 @@ class Branch(ModifiedTimeStampMixin, TimeStampedModel):
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(
-                fields=['name'], name='branch_name_unique'  # noqa
+                fields=['name'], name='branch_name_unique'
             )
         ]
 

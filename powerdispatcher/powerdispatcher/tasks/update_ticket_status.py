@@ -3,10 +3,10 @@ import traceback
 from celery.utils.log import get_task_logger
 from django.utils import timezone
 # TOOLS FOR TESTING
-from selenium.webdriver.common.action_chains import ActionChains  # noqa
-from selenium.webdriver.common.by import By  # noqa
-from selenium.webdriver.support import expected_conditions as EC  # noqa
-from selenium.webdriver.support.ui import WebDriverWait  # noqa
+# from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as EC
+# from selenium.webdriver.support.ui import WebDriverWait
 from service.celery import app
 
 from powerdispatcher.models import Status, Ticket
@@ -57,7 +57,7 @@ def update_ticket_status(ticket_ids=[]):
 
         log_info("Scraping ticket ids",)
 
-        ticket_ids = scraper.get_ticket_ids_from_search_result(max_results=MAX_TICKETS_TO_UPDATE)  # noqa
+        ticket_ids = scraper.get_ticket_ids_from_search_result(max_results=MAX_TICKETS_TO_UPDATE)
 
         ticket_ids = ticket_ids[:MAX_TICKETS_TO_UPDATE]
         for idx, ticket_id in enumerate(ticket_ids):
@@ -65,7 +65,7 @@ def update_ticket_status(ticket_ids=[]):
                 f"{idx+1}/{len(ticket_ids)} Updating ticket {ticket_id}"
             )
             try:
-                scraper.update_ticket_status(ticket_id=ticket_id, status='CANCELED')  # noqa
+                scraper.update_ticket_status(ticket_id=ticket_id, status='CANCELED')
                 Ticket.objects.filter(powerdispatch_ticket_id__in=[ticket_id])\
                     .update(status=status)
             except Exception as e:

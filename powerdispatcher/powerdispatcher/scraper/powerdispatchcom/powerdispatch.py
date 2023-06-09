@@ -36,7 +36,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             'chrome': webdriver.ChromeOptions,
             'firefox': webdriver.FirefoxOptions,
         }
-        options_headers += ['--headless', '--no-sandbox'] if settings.HEADLESS else []  # noqa
+        options_headers += ['--headless', '--no-sandbox'] if settings.HEADLESS else []
         OptionClass = initialize_options.get(self.browser_type)
         options = OptionClass()
 
@@ -82,7 +82,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             host_resolver_rules = ', '.join([
                 f'MAP {d} 127.0.0.1' for d in self.blocked_domains
             ])
-            options.add_argument(f'--host-resolver-rules={host_resolver_rules}')  # noqa
+            options.add_argument(f'--host-resolver-rules={host_resolver_rules}')
 
         return options
 
@@ -268,7 +268,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         submit_btn.click()
 
     def filter_job_list(self, date):
-        self.navigate_to('https://lite.serviceslogin.com/appointments.php?init=1')  # noqa
+        self.navigate_to('https://lite.serviceslogin.com/appointments.php?init=1')
 
         filter_element = WebDriverWait(self.driver, timeout=20).until(
             EC.presence_of_element_located(
@@ -364,7 +364,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
-                    '//div[@id="paneDocuments"]/following-sibling::button[contains(text(), "Save Job")]'  # noqa
+                    '//div[@id="paneDocuments"]/following-sibling::button[contains(text(), "Save Job")]'
                 )
             )
         )
@@ -412,7 +412,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         ).text
 
         # Expected format Oct 03 2022 09:38 AM EDT
-        created_datetime_obj = get_datetime_obj_from_str(created_datetime_str, "%b %d %Y %I:%M %p")  # noqa
+        created_datetime_obj = get_datetime_obj_from_str(created_datetime_str, "%b %d %Y %I:%M %p")
 
         job_description_element = WebDriverWait(self.driver, timeout=20).until(
             EC.presence_of_element_located(
@@ -420,7 +420,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             )
         )
         job_description_selector = Select(job_description_element)
-        job_description_str = job_description_selector.first_selected_option.text  # noqa
+        job_description_str = job_description_selector.first_selected_option.text
 
         customer_phone = WebDriverWait(self.driver, timeout=20).until(
             EC.presence_of_element_located(
@@ -532,7 +532,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             try:
                 selected_option = \
                     who_canceled_element_selector.first_selected_option.text
-                who_canceled_str = selected_option if selected_option else None  # noqa
+                who_canceled_str = selected_option if selected_option else None
             except Exception:
                 who_canceled_str = None
 
@@ -586,41 +586,41 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                     match_found = re.search(r'ACCEPTED job', comment_content)
                     if match_found and not accepted_time:
                         accepted_time = date_label + " " + comment_child_element. \
-                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
+                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
                     match_found = re.search(r'CLOSED job', comment_content)
                     if match_found and not closed_time:
                         closed_time = date_label + " " + comment_child_element. \
-                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
+                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
                     if technician:
                         match_found = re.search(
-                            r'To: ',  # noqa
+                            r'To: ',
                             comment_content
                         )
                         if match_found and not sent_time:
                             sent_time = date_label + " " + comment_child_element. \
-                                find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
+                                find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
                 elif lower_comment_title == "job created":
                     created_by = comment_child_element. \
-                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]").text  # noqa
+                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]").text
                     comment_content = comment_child_element.find_element(
                         By.XPATH,
                         "./tbody/tr/td[2]/div[2]/div/pre"
                     ).text
                     match_found = re.search(
-                        r'Job sent to {techinian}'.format(techinian=technician),  # noqa
+                        r'Job sent to {techinian}'.format(techinian=technician),
                         comment_content
                     )
                     if match_found and not sent_time:
                         sent_time = date_label + " " + comment_child_element. \
-                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa;
+                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
                 elif lower_comment_title == "conference created" \
                         and not sent_time:
                     first_call_time = date_label + " " + comment_child_element. \
-                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text  # noqa
+                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
                 elif lower_comment_title in closed_by_titles \
                         and not closed_by:
-                        closed_by = comment_child_element. \
-                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]").text  # noqa
+                    closed_by = comment_child_element. \
+                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]").text
 
         sent_at = None
         accepted_at = None

@@ -22,7 +22,7 @@ class Technician(ModifiedTimeStampMixin, TimeStampedModel):
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(
-                fields=['name'], name='technician_name_unique'  # noqa
+                fields=['name'], name='technician_name_unique'
             )
         ]
 

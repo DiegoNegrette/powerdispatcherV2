@@ -4,10 +4,10 @@ import ipdb
 from celery.utils.log import get_task_logger
 from django.utils import timezone
 # TOOLS FOR TESTING
-from selenium.webdriver.common.action_chains import ActionChains  # noqa
-from selenium.webdriver.common.by import By  # noqa
-from selenium.webdriver.support import expected_conditions as EC  # noqa
-from selenium.webdriver.support.ui import WebDriverWait  # noqa
+# from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as EC
+# from selenium.webdriver.support.ui import WebDriverWait
 from service.celery import app
 
 from powerdispatcher.models import ProjectConfiguration, ScraperLog
@@ -114,7 +114,7 @@ def scrape_and_upsert_powerdispatch_tickets():
         log_info("Calculating date range", scraper_log=scraper_log)
 
         log_info(
-            f"Filtering tickets from {scraper_log.from_date} to {scraper_log.to_date}",  # noqa
+            f"Filtering tickets from {scraper_log.from_date} to {scraper_log.to_date}",
             scraper_log=scraper_log
         )
 
@@ -168,7 +168,7 @@ def scrape_and_upsert_powerdispatch_tickets():
             if created:
                 new_tickets += 1
         scraper_log \
-            .end_as(status=ScraperLog.STATUS_SUCCESS, reason="End of task reached")  # noqa
+            .end_as(status=ScraperLog.STATUS_SUCCESS, reason="End of task reached")
     except Exception as e:
         logger.error(e)
         scraper_log.end_as(status=ScraperLog.STATUS_FAILED, reason=str(e))
