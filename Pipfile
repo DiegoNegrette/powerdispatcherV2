@@ -17,6 +17,7 @@ ipdb = "*"
 django-appconf = "*"
 pandas = "*"
 django-import-export = "*"
+requests = "*"
 
 [dev-packages]
 flake8 = "*"

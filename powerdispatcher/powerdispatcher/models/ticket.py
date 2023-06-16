@@ -1,17 +1,10 @@
 from django.db import models
+from django.utils import timezone
 from model_utils.models import TimeStampedModel
 
-from powerdispatcher.models import (
-    Branch,
-    Customer,
-    Date,
-    Dispatcher,
-    JobDescription,
-    Location,
-    ModifiedTimeStampMixin,
-    Status,
-    Technician
-)
+from powerdispatcher.models import (Branch, Customer, Date, Dispatcher,
+                                    JobDescription, Location,
+                                    ModifiedTimeStampMixin, Status, Technician)
 
 
 class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
@@ -56,14 +49,29 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
     first_call_at = models.DateTimeField(null=True, blank=True)
     closed_at = models.DateTimeField(null=True, blank=True)
 
+    empty_callrail_logs = models.BooleanField(default=False)
+    reported_gclid = models.BooleanField(default=False)
+    has_reported_gclid = models.BooleanField(default=False)
+    reported_gclid_at = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         verbose_name_plural = 'Tickets'
         ordering = ('-created_at',)
         constraints = [
             models.UniqueConstraint(
-                fields=['powerdispatch_ticket_id'], name='powerdispatch_ticket_unique'  # noqa
+                fields=['powerdispatch_ticket_id'], name='powerdispatch_ticket_unique'
             )
         ]
 
     def __str__(self):
         return f'{self.powerdispatch_ticket_id} - {self.status}'
+
+    def mark_empty_callrail_logs(self):
+        self.empty_callrail_logs = True
+        self.save(update_fields=['empty_callrail_logs'])
+
+    def mark_reported_gclid(self, gclid):
+        self.gclid = gclid
+        self.has_reported_gclid = True
+        self.reported_gclid_at = timezone.now()
+        self.save(update_fields=['gclid', 'has_reported_gclid', 'reported_gclid_at'])

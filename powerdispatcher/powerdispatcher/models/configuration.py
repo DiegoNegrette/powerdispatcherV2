@@ -37,6 +37,11 @@ class ProjectConfiguration(SingletonModel):
         verbose_name='Max amount of days to scrape'
     )
 
+    first_date_to_report_gclid = models.DateField(
+        default=timezone.localtime,
+        verbose_name='All tickets from this date will report their gclid'
+    )
+
     class Meta:
         verbose_name = 'Project configuration'
         verbose_name_plural = 'Project configurations'

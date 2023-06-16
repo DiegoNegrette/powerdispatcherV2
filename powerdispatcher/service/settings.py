@@ -1,7 +1,8 @@
-import environ
 from pathlib import Path
 
-from service.logging import LOGGING  # noqa
+import environ
+
+# from service.logging import LOGGING
 
 env = environ.Env(
     # set casting, default value
@@ -18,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str(
     'DJANGO_SECRET_KEY',
-    default='django-insecure-segr^u_$+(ai5rxc+vi8cmhn%1gd5mffbmke5c^7(ig!=je&k*'  # noqa
+    default='django-insecure-segr^u_$+(ai5rxc+vi8cmhn%1gd5mffbmke5c^7(ig!=je&k*'
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -102,16 +103,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',  # noqa
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',  # noqa
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',  # noqa
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',  # noqa
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -136,7 +137,7 @@ STATIC_URL = 'static/'
 
 # ------------ Celery
 APP_VHOST = env.str('APP_VHOST', default='powerdispatch')
-CELERY_BROKER_URL = env.str('CELERY_BROKER_URL', f'pyamqp://rabbitmq:rabbitmq@rabbitmq:5672/{APP_VHOST}')  # noqa
+CELERY_BROKER_URL = env.str('CELERY_BROKER_URL', f'pyamqp://rabbitmq:rabbitmq@rabbitmq:5672/{APP_VHOST}')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -153,6 +154,9 @@ BROWSER = env.str('BROWSER', default='chrome')
 CONNECTION_TYPE = env.str('CONNECTION_TYPE', default='remote')
 WEB_DRIVER_URL = env.str('WEB_DRIVER_URL', default='')
 WEB_DRIVER_PATH = env.str('WEB_DRIVER_PATH', default='/chromedriver')
+
+CALLRAIL_ACCOUNT_TOKEN = env.str('CALLRAIL_ACCOUNT_TOKEN', default='')
+CALLRAIL_ACCOUNT_ID = env.str('CALLRAIL_ACCOUNT_ID', default='')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

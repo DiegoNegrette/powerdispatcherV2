@@ -3,7 +3,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',  # noqa
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         },
         'simple': {
@@ -30,6 +30,12 @@ LOGGING = {
             'filename': 'logs/scraper.log',
             'formatter': 'simple',
         },
+        'file_callrail': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/callrail.log',
+            'formatter': 'simple',
+        },
     },
     'loggers': {
         'django': {
@@ -38,6 +44,11 @@ LOGGING = {
         },
         'scraper': {
             'handlers': ['console', 'file_scraper'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'callrail': {
+            'handlers': ['console', 'file_callrail'],
             'level': 'INFO',
             'propagate': False,
         },
