@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 django = "*"
-selenium = "*"
 django-environ = "*"
 django-debug-toolbar = "*"
 django-model-utils = "*"
@@ -17,7 +16,9 @@ ipdb = "*"
 django-appconf = "*"
 pandas = "*"
 django-import-export = "*"
-requests = "*"
+selenium = "~=3.141.0"
+requests = "~=2.26.0"
+urllib3 = "~=1.25.11"
 
 [dev-packages]
 flake8 = "*"
