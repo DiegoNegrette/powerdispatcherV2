@@ -40,12 +40,12 @@ def report_ticket_gclid(ticket_ids=[]):
             Q(has_reported_gclid=False)
         ).select_related('customer').order_by('job_date')
 
-        target_tickets = target_tickets[:1000]
+        # target_tickets = target_tickets[:1000]
 
-    for ticket in target_tickets:
+    for idx, ticket in enumerate(target_tickets):
         customer_phone_number = f'+1{ticket.customer.phone}'
         # customer_phone_number = '+19566488345'
-        print(f"******** Ticket id: {ticket.powerdispatch_ticket_id} - {customer_phone_number} ********")
+        print(f"******** {idx+1}/{len(target_tickets)} Ticket id: {ticket.powerdispatch_ticket_id} - {customer_phone_number} ********")  # noqa
         gclid = None
         sale_value = ticket.credit_payment + ticket.cash_payment
         sale_value = float(json.dumps(sale_value, default=float))
