@@ -11,7 +11,7 @@ logger = get_task_logger('scraper')
 queue_name = 'main_queue'
 
 
-REPORT_GCLID_URL = 'https://analytics-api.getconversiondata.com/api/v1/external-lead-routes/callrail/5b4392bb-08c8-4d81-aefa-cd03bbd46794'  # noqa
+REPORT_GCLID_URL = 'https://analytics-api.getconversiondata.com/t/serverside-integration'  # noqa
 
 
 def log_info(message):
@@ -40,7 +40,7 @@ def report_ticket_gclid(ticket_ids=[]):
             Q(has_reported_gclid=False)
         ).select_related('customer').order_by('job_date')
 
-        target_tickets = target_tickets[:10]
+        # target_tickets = target_tickets[:10]
 
     for ticket in target_tickets:
         customer_phone_number = f'+1{ticket.customer.phone}'
