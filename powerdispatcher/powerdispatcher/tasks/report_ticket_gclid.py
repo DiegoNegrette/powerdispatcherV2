@@ -40,7 +40,7 @@ def report_ticket_gclid(ticket_ids=[]):
             Q(has_reported_gclid=False)
         ).select_related('customer').order_by('job_date')
 
-        # target_tickets = target_tickets[:10]
+        target_tickets = target_tickets[:1000]
 
     for ticket in target_tickets:
         customer_phone_number = f'+1{ticket.customer.phone}'
