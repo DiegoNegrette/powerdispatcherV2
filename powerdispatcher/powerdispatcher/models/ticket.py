@@ -50,7 +50,7 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
     closed_at = models.DateTimeField(null=True, blank=True)
 
     empty_callrail_logs = models.BooleanField(default=False)
-    reported_gclid = models.BooleanField(default=False)
+    reported_gclid = models.CharField(max_length=255, null=True, blank=True)
     has_reported_gclid = models.BooleanField(default=False)
     reported_gclid_at = models.DateTimeField(null=True, blank=True)
 
@@ -71,7 +71,7 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
         self.save(update_fields=['empty_callrail_logs'])
 
     def mark_reported_gclid(self, gclid):
-        self.gclid = gclid
+        self.reported_gclid = gclid
         self.has_reported_gclid = True
         self.reported_gclid_at = timezone.now()
-        self.save(update_fields=['gclid', 'has_reported_gclid', 'reported_gclid_at'])
+        self.save(update_fields=['reported_gclid', 'has_reported_gclid', 'reported_gclid_at'])
