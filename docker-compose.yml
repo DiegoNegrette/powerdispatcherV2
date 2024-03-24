@@ -1,5 +1,9 @@
 version: "3.6"
 
+networks:
+  default:
+    driver: bridge
+
 services:
     # This container has to be exclude from production configurations.
     # its main purpose is to allow you to access containers running in the host machine
@@ -9,6 +13,8 @@ services:
         cap_add: ["NET_ADMIN", "NET_RAW"]
         # mem_limit: 8M
         restart: on-failure
+        networks:
+            - default
 
     rabbitmq:
         restart: always
@@ -56,6 +62,8 @@ services:
             bash -c ' pipenv install --system --skip-lock --dev && sleep 14 && watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A service worker --concurrency 4 -O fair -Q main_queue --beat --scheduler django -l INFO'
         depends_on:
             - rabbitmq
+        networks:
+            - default
 
     # celery-worker-test:
     #     restart: on-failure
@@ -98,6 +106,8 @@ services:
             - "${WEBDRIVER_PORT_START}-${WEBDRIVER_PORT_END}:5900"
         stdin_open: true
         tty: true
+        networks:
+            - default
 
     selenium-hub:
         restart: always
@@ -113,3 +123,5 @@ services:
             - JAVA_OPTS=-Dwebdriver.chrome.whitelistedIps=
         stdin_open: true
         tty: true
+        networks:
+            - default

@@ -37,3 +37,10 @@ class ScraperBaseMixin:
     def navigate_to(self, target_url):
         self.log(f"Navigating to {target_url}")
         self.driver.get(target_url)
+
+    def scroll_to_element(self, element, offset_top: int = None):
+        script = 'return arguments[0].scrollIntoView(true);'
+        if offset_top is not None:
+            script += f' window.scrollBy(0, {offset_top});'
+        self.driver.execute_script(script, element)
+        self.sleep(1)

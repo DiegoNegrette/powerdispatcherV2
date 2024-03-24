@@ -2,7 +2,7 @@ from pathlib import Path
 
 import environ
 
-# from service.logging import LOGGING
+from service.logging import LOGGING
 
 env = environ.Env(
     # set casting, default value

@@ -19,6 +19,8 @@ django-import-export = "*"
 selenium = "~=3.141.0"
 requests = "~=2.26.0"
 urllib3 = "~=1.25.11"
+retry-requests = "*"
+aiohttp = "*"
 
 [dev-packages]
 flake8 = "*"

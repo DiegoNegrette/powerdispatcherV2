@@ -1,4 +1,5 @@
 import datetime
+import ipdb
 import re
 from decimal import Decimal
 
@@ -163,6 +164,22 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         )
         submit.click()
         self.sleep(2)
+        self.close_twilio_advertise()
+
+    def close_twilio_advertise(self):
+        try:
+            target_btn = WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        "//button[contains(text(), ' I acknowledge this notice')]"
+                    )
+                ),
+                message="Close btn not found!"
+            )
+            target_btn.click()
+        except Exception:
+            return
 
     def goto_search_menu(self):
         search_menu_btn = WebDriverWait(self.driver, 10).until(
@@ -242,6 +259,8 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             f"./tbody/descendant::div[@aria-label='{input_date_str}']"
         )
 
+        self.sleep(2)
+
         target_day.click()
 
     def _filter_status(self, status):
@@ -265,6 +284,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 (By.ID, "btnSubmit")
             )
         )
+        self.scroll_to_element(submit_btn)
         submit_btn.click()
 
     def filter_job_list(self, date):
@@ -290,6 +310,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 (By.ID, "btnSearch")
             )
         )
+        self.scroll_to_element(btn_search)
         btn_search.click()
         self.sleep(10)
 
