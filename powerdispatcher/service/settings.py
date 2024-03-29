@@ -92,11 +92,14 @@ WSGI_APPLICATION = "service.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env.str("POSTGRES_DB", default="prolocksmiths-dev"),
+        "USER": env.str("POSTGRES_PASSWORD", default="dev"),
+        "PASSWORD": env.str("POSTGRES_PASSWORD", default="dev"),
+        "HOST": env.str("HOST", default="127.0.0.1"),
+        "PORT": env.int("PORT", default=5432),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

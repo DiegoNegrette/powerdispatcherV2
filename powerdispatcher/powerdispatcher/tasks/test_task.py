@@ -6,5 +6,5 @@ queue_name = "main_queue"
 
 
 @app.task(queue_name=queue_name)
-def update_ticket_status(ticket_ids=[]):
+def test_task():
     logger.info("Test Task worked")
