@@ -1,21 +1,29 @@
 import re
 
-from powerdispatcher.models import (Branch, Customer, Date, Dispatcher,
-                                    JobDescription, Location, Status,
-                                    Technician, Ticket)
+from powerdispatcher.models import (
+    Branch,
+    Customer,
+    Date,
+    Dispatcher,
+    JobDescription,
+    Location,
+    Status,
+    Technician,
+    Ticket,
+)
 
 
 class PowerdispatchManager:
 
     def clean_phone(self, input_phone_str):
-        new_phone_str = re.sub(r"\D", '', input_phone_str)
+        new_phone_str = re.sub(r"\D", "", input_phone_str)
         phone_str = new_phone_str.strip()
         PHONE_MAX_LENGTH = 10
         phone_str = phone_str[-PHONE_MAX_LENGTH:]
         return phone_str
 
     def clean_zip_code(self, input_zip_code):
-        new_zip_code = re.sub(r"\D", '', input_zip_code)
+        new_zip_code = re.sub(r"\D", "", input_zip_code)
         zip_code = new_zip_code.strip()
         return zip_code
 
@@ -38,23 +46,18 @@ class PowerdispatchManager:
 
     def upsert_customer(self, phone_str):
         phone = self.clean_phone(input_phone_str=phone_str)
-        customer, _ = Customer.objects.get_or_create(
-            phone=phone
-        )
+        customer, _ = Customer.objects.get_or_create(phone=phone)
         return customer
 
     def upsert_job_description(self, job_description_str):
-        description \
-            = self.clean_description(input_description=job_description_str)
+        description = self.clean_description(input_description=job_description_str)
         job_description_obj, _ = JobDescription.objects.get_or_create(
             description=description
         )
         return job_description_obj
 
     def upsert_dispatcher(self, dispatcher_str):
-        dispatcher_obj, _ = Dispatcher.objects.get_or_create(
-            name=dispatcher_str
-        )
+        dispatcher_obj, _ = Dispatcher.objects.get_or_create(name=dispatcher_str)
         return dispatcher_obj
 
     def upsert_technician(self, technician_str):
@@ -64,9 +67,7 @@ class PowerdispatchManager:
         return technician_obj
 
     def upsert_branch(self, company_str):
-        company_obj, _ = Branch.objects.get_or_create(
-            name=company_str
-        )
+        company_obj, _ = Branch.objects.get_or_create(name=company_str)
         return company_obj
 
     def get_calendar_date(self, job_date):
@@ -83,7 +84,7 @@ class PowerdispatchManager:
         status = self.get_status(
             status_str=ticket_info["status"],
             who_canceled=ticket_info["who_canceled"],
-            why_canceled=ticket_info["why_canceled"]
+            why_canceled=ticket_info["why_canceled"],
         )
         technician = self.upsert_technician(ticket_info["technician"])
         job_description = self.upsert_job_description(ticket_info["job_description"])
@@ -123,8 +124,7 @@ class PowerdispatchManager:
 
     def upsert_ticket(self, ticket_info):
         ticket_obj_dict = self.get_obj_dict_from_ticket_info(ticket_info)
-        powerdispatch_ticket_id = ticket_obj_dict \
-            .pop("powerdispatch_ticket_id")
+        powerdispatch_ticket_id = ticket_obj_dict.pop("powerdispatch_ticket_id")
         ticket, created = Ticket.objects.get_or_create(
             powerdispatch_ticket_id=powerdispatch_ticket_id,
             defaults=ticket_obj_dict,
@@ -132,7 +132,7 @@ class PowerdispatchManager:
         return ticket, created
 
     def clean_description(self, input_description):
-        new_description = re.sub(r"\[.+\]", '', input_description)
+        new_description = re.sub(r"\[.+\]", "", input_description)
         description = new_description.strip()
         return description
 
@@ -151,8 +151,9 @@ class PowerdispatchManager:
         return job_description_obj_dict
 
     def upsert_job_descriptions(self, job_description_info):
-        job_description_obj_dict \
-            = self.get_obj_dict_from_job_description_info(job_description_info)
+        job_description_obj_dict = self.get_obj_dict_from_job_description_info(
+            job_description_info
+        )
         description = job_description_obj_dict.pop("description")
         job_description, created = JobDescription.objects.get_or_create(
             description=description,

@@ -14,9 +14,9 @@ class Dispatcher(ModifiedTimeStampMixin, TimeStampedModel):
     enabled = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name_plural = 'Dispatchers'
-        ordering = ('name',)
-        unique_together = ['user', 'name']
+        verbose_name_plural = "Dispatchers"
+        ordering = ("name",)
+        unique_together = ["user", "name"]
 
     def __str__(self):
         return f"{self.name}"

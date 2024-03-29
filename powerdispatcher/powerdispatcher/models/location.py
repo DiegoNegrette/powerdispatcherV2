@@ -15,9 +15,9 @@ class Location(ModifiedTimeStampMixin, TimeStampedModel):
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
 
     class Meta:
-        verbose_name_plural = 'Locations'
-        ordering = ('country', 'state', 'primary_city')
-        unique_together = ['zip_code', 'latitude', 'latitude']
+        verbose_name_plural = "Locations"
+        ordering = ("country", "state", "primary_city")
+        unique_together = ["zip_code", "latitude", "latitude"]
 
     def __str__(self):
         return f"{self.zip_code} / {self.state_short} - {self.primary_city}"

@@ -22,26 +22,26 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         super().__init__(**kwargs)
         project_configuration = ProjectConfiguration.objects.get()
         self.current_account = {
-            'account': project_configuration.powerdispatch_account,
-            'username': project_configuration.powerdispatch_username,
-            'password': project_configuration.powerdispatch_password,
+            "account": project_configuration.powerdispatch_account,
+            "username": project_configuration.powerdispatch_username,
+            "password": project_configuration.powerdispatch_password,
         }
         self.account_identifier = "powerdispatch"
-        self.webdriver_container_host = 'docker-host'
+        self.webdriver_container_host = "docker-host"
         self.webdriver_container_port = None
         self.blocked_domains = []
 
     def get_default_options(self):
-        options_headers = ['--disable-notifications']
+        options_headers = ["--disable-notifications"]
         initialize_options = {
-            'chrome': webdriver.ChromeOptions,
-            'firefox': webdriver.FirefoxOptions,
+            "chrome": webdriver.ChromeOptions,
+            "firefox": webdriver.FirefoxOptions,
         }
-        options_headers += ['--headless', '--no-sandbox'] if settings.HEADLESS else []
+        options_headers += ["--headless", "--no-sandbox"] if settings.HEADLESS else []
         OptionClass = initialize_options.get(self.browser_type)
         options = OptionClass()
 
-        options.add_argument('--start-maximized')
+        options.add_argument("--start-maximized")
 
         for options_header in options_headers:
             options.add_argument(options_header)
@@ -50,40 +50,38 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
 
     def get_chrome_options(self, options):
 
-        options.add_argument('--disable-blink-features=AutomationControlled')
-        options.add_experimental_option(
-            'excludeSwitches', ['enable-automation']
-        )
-        options.add_argument('--disable-geolocation')
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_argument("--disable-geolocation")
 
         # options.add_argument(f'--user-data-dir=/home/seluser/.config/google-chrome/{user_data_dir_name}')
 
         prefs = dict()
 
         # disable geolocation
-        prefs['profile.default_content_setting_values.geolocation'] = 2
+        prefs["profile.default_content_setting_values.geolocation"] = 2
 
         # disable "save password?" prompt
-        prefs['credentials_enable_service'] = False
-        prefs['profile.password_manager_enabled'] = False
+        prefs["credentials_enable_service"] = False
+        prefs["profile.password_manager_enabled"] = False
 
         # disable webRTC to avoid real-IP leak
-        prefs['webrtc.ip_handling_policy'] = 'disable_non_proxied_udp'
-        prefs['webrtc.multiple_routes_enabled'] = False
-        prefs['webrtc.nonproxied_udp_enabled'] = False
+        prefs["webrtc.ip_handling_policy"] = "disable_non_proxied_udp"
+        prefs["webrtc.multiple_routes_enabled"] = False
+        prefs["webrtc.nonproxied_udp_enabled"] = False
 
         # Change Language to English (Does not work for XPATH)
         # prefs['translate_whitelists'] = {'uk': 'en'}
         # prefs['translate'] = {'enabled': 'true'}
 
-        options.add_experimental_option('prefs', prefs)
+        options.add_experimental_option("prefs", prefs)
 
         # some assets are not worth loading and/or take too much time to load
         if len(self.blocked_domains) > 0:
-            host_resolver_rules = ', '.join([
-                f'MAP {d} 127.0.0.1' for d in self.blocked_domains
-            ])
-            options.add_argument(f'--host-resolver-rules={host_resolver_rules}')
+            host_resolver_rules = ", ".join(
+                [f"MAP {d} 127.0.0.1" for d in self.blocked_domains]
+            )
+            options.add_argument(f"--host-resolver-rules={host_resolver_rules}")
 
         return options
 
@@ -98,26 +96,26 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         elif self.browser_type == self.BROWSER_FIREFOX:
             self.get_firefox_options(options)
         else:
-            raise Exception(f'Browser not supported: {self.browser_type}')
+            raise Exception(f"Browser not supported: {self.browser_type}")
 
         return options
 
     def get_driver(self, options):
         initialize_driver = {
-            'remote+firefox': webdriver.Remote,
-            'remote+chrome': webdriver.Remote,
-            'local+chrome': webdriver.Chrome,
+            "remote+firefox": webdriver.Remote,
+            "remote+chrome": webdriver.Remote,
+            "local+chrome": webdriver.Chrome,
         }
         eligible_capabilities = {
-            'chrome': DesiredCapabilities.CHROME,
-            'firefox': DesiredCapabilities.FIREFOX,
+            "chrome": DesiredCapabilities.CHROME,
+            "firefox": DesiredCapabilities.FIREFOX,
         }
         connection_options = {
-            'local': settings.WEB_DRIVER_PATH,
-            'remote': self.webdriver_url,
+            "local": settings.WEB_DRIVER_PATH,
+            "remote": self.webdriver_url,
         }
 
-        primary_identifier = f'{settings.CONNECTION_TYPE}+{self.browser_type}'
+        primary_identifier = f"{settings.CONNECTION_TYPE}+{self.browser_type}"
 
         DriverClass = initialize_driver[primary_identifier]
 
@@ -128,7 +126,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         return DriverClass(
             connection_options[settings.CONNECTION_TYPE],
             desired_capabilities=desired_capabilities,
-            options=options
+            options=options,
         )
 
     def init_driver(self):
@@ -140,27 +138,19 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         self.navigate_to(settings.POWERDISPATCHER_POWER_DISPATCH_BASE_URL)
 
         account = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.NAME, "_account")
-            )
+            EC.presence_of_element_located((By.NAME, "_account"))
         )
         account.send_keys(self.current_account["account"])
         username = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.NAME, "_username")
-            )
+            EC.presence_of_element_located((By.NAME, "_username"))
         )
         username.send_keys(self.current_account["username"])
         password = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.NAME, "_password")
-            )
+            EC.presence_of_element_located((By.NAME, "_password"))
         )
         password.send_keys(self.current_account["password"])
         submit = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.NAME, "_submit")
-            )
+            EC.presence_of_element_located((By.NAME, "_submit"))
         )
         submit.click()
         self.sleep(2)
@@ -172,10 +162,10 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 EC.element_to_be_clickable(
                     (
                         By.XPATH,
-                        "//button[contains(text(), ' I acknowledge this notice')]"
+                        "//button[contains(text(), ' I acknowledge this notice')]",
                     )
                 ),
-                message="Close btn not found!"
+                message="Close btn not found!",
             )
             target_btn.click()
         except Exception:
@@ -183,29 +173,20 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
 
     def goto_search_menu(self):
         search_menu_btn = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    "//a[contains(text(), 'Search')]"
-                )
-            ),
-            message="Search menu btn not found!"
+            EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Search')]")),
+            message="Search menu btn not found!",
         )
         search_menu_btn.click()
         self.sleep(2)
 
     def _filter_search(self, input_date, table_identifier):
         input_date_btn = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, f"{table_identifier}")
-            )
+            EC.presence_of_element_located((By.ID, f"{table_identifier}"))
         )
         input_date_btn.click()
 
         table_root = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, f"{table_identifier}_root")
-            )
+            EC.presence_of_element_located((By.ID, f"{table_identifier}_root"))
         )
 
         MAX_CLICKS = 5 * 12  # 5 years
@@ -216,14 +197,18 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 By.XPATH, "./descendant::div[@class='picker__header']"
             )
 
-            table_month = table_header. \
-                find_element(By.XPATH, "./div[@class='picker__month']")
-            table_year = table_header.  \
-                find_element(By.XPATH, "./div[@class='picker__year']")
-            prev_month_btn = table_header. \
-                find_element(By.XPATH, "./div[@class='picker__nav--prev']")
-            next_month_btn = table_header. \
-                find_element(By.XPATH, "./div[@class='picker__nav--next']")
+            table_month = table_header.find_element(
+                By.XPATH, "./div[@class='picker__month']"
+            )
+            table_year = table_header.find_element(
+                By.XPATH, "./div[@class='picker__year']"
+            )
+            prev_month_btn = table_header.find_element(
+                By.XPATH, "./div[@class='picker__nav--prev']"
+            )
+            next_month_btn = table_header.find_element(
+                By.XPATH, "./div[@class='picker__nav--next']"
+            )
 
             DUMMY_DAY = 1
 
@@ -234,8 +219,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 currently_selected_date_str, "%d %B %Y"
             ).date()
 
-            first_day_of_currently_selected \
-                = trunc_date(currently_selected_date_obj)
+            first_day_of_currently_selected = trunc_date(currently_selected_date_obj)
             first_day_of_input_date = trunc_date(input_date)
 
             if first_day_of_currently_selected > first_day_of_input_date:
@@ -247,16 +231,13 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             clicks_performed += 1
 
         table_body = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, f"{table_identifier}_table")
-            )
+            EC.presence_of_element_located((By.ID, f"{table_identifier}_table"))
         )
 
         input_date_str = input_date.strftime("%Y-%m-%d")
 
         target_day = table_body.find_element(
-            By.XPATH,
-            f"./tbody/descendant::div[@aria-label='{input_date_str}']"
+            By.XPATH, f"./tbody/descendant::div[@aria-label='{input_date_str}']"
         )
 
         self.sleep(2)
@@ -265,9 +246,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
 
     def _filter_status(self, status):
         status_element = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "ddStatus")
-            )
+            EC.presence_of_element_located((By.ID, "ddStatus"))
         )
         status_element_selector = Select(status_element)
         status_element_selector.select_by_value(status)
@@ -280,15 +259,13 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         if status:
             self._filter_status(status)
         submit_btn = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "btnSubmit")
-            )
+            EC.presence_of_element_located((By.ID, "btnSubmit"))
         )
         self.scroll_to_element(submit_btn)
         submit_btn.click()
 
     def filter_job_list(self, date):
-        self.navigate_to('https://lite.serviceslogin.com/appointments.php?init=1')
+        self.navigate_to("https://lite.serviceslogin.com/appointments.php?init=1")
 
         filter_element = WebDriverWait(self.driver, timeout=20).until(
             EC.presence_of_element_located(
@@ -298,17 +275,13 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         filter_element.click()
 
         date_element = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "ddTimeRange")
-            )
+            EC.presence_of_element_located((By.ID, "ddTimeRange"))
         )
         date_element_selector = Select(date_element)
         date_element_selector.select_by_value(date)
 
         btn_search = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "btnSearch")
-            )
+            EC.presence_of_element_located((By.ID, "btnSearch"))
         )
         self.scroll_to_element(btn_search)
         btn_search.click()
@@ -320,18 +293,17 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         all_ticket_ids = []
         while current_page <= MAX_PAGES:
             try:
-                search_result_table = WebDriverWait(self.driver, timeout=20)\
-                    .until(
-                    EC.presence_of_element_located(
-                        (By.ID, "search-result-table")
-                    )
+                search_result_table = WebDriverWait(self.driver, timeout=20).until(
+                    EC.presence_of_element_located((By.ID, "search-result-table"))
                 )
             except Exception:
                 return all_ticket_ids
-            current_page_jobs = search_result_table. \
-                find_elements(By.XPATH, "./tbody[2]/tr")
-            current_page_jobs = search_result_table. \
-                find_elements(By.XPATH, "./tbody[2]/tr")
+            current_page_jobs = search_result_table.find_elements(
+                By.XPATH, "./tbody[2]/tr"
+            )
+            current_page_jobs = search_result_table.find_elements(
+                By.XPATH, "./tbody[2]/tr"
+            )
 
             for job in current_page_jobs:
                 ticket_id_element = job.find_element(By.XPATH, "./td[5]")
@@ -346,12 +318,9 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             try:
                 next_page_btn = WebDriverWait(self.driver, 10).until(
                     EC.element_to_be_clickable(
-                        (
-                            By.XPATH,
-                            "//button[contains(text(), 'Next')]"
-                        )
+                        (By.XPATH, "//button[contains(text(), 'Next')]")
                     ),
-                    message="Next page btn not found!"
+                    message="Next page btn not found!",
                 )
                 next_page_btn.click()
                 self.sleep(2)
@@ -365,27 +334,24 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         return all_ticket_ids
 
     def update_ticket_status(self, ticket_id, status):
-        ticket_permalink = settings.POWERDISPATCHER_TICKET_URL. \
-            format(ticket_id=ticket_id)
+        ticket_permalink = settings.POWERDISPATCHER_TICKET_URL.format(
+            ticket_id=ticket_id
+        )
         self.navigate_to(ticket_permalink)
         status_element = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "ddStatus")
-            )
+            EC.presence_of_element_located((By.ID, "ddStatus"))
         )
         status_element_selector = Select(status_element)
         status_element_selector.select_by_value(status)
 
-        if status == 'CANCELED':
-            self.update_canceled_fields(
-                who_canceled='OFFICE', why_canceled='FU'
-            )
+        if status == "CANCELED":
+            self.update_canceled_fields(who_canceled="OFFICE", why_canceled="FU")
 
         save_btn = WebDriverWait(self.driver, timeout=20).until(
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
-                    '//div[@id="paneDocuments"]/following-sibling::button[contains(text(), "Save Job")]'
+                    '//div[@id="paneDocuments"]/following-sibling::button[contains(text(), "Save Job")]',
                 )
             )
         )
@@ -393,19 +359,14 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         save_btn.click()
         WebDriverWait(self.driver, timeout=20).until(
             EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    '//a[contains(text(), " Jobs List")]'
-                )
+                (By.XPATH, '//a[contains(text(), " Jobs List")]')
             )
         )
 
     def update_canceled_fields(self, who_canceled, why_canceled):
         who_canceled_element = WebDriverWait(self.driver, timeout=20).until(
             EC.presence_of_element_located(
-                (
-                    By.XPATH, "//div[@id='cancel_slide']/descendant::select"
-                )
+                (By.XPATH, "//div[@id='cancel_slide']/descendant::select")
             )
         )
         who_canceled_element_selector = Select(who_canceled_element)
@@ -419,67 +380,69 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         why_canceled_element.send_keys(why_canceled)
 
     def get_ticket_info(self, ticket_id):
-        ticket_permalink = settings.POWERDISPATCHER_TICKET_URL. \
-            format(ticket_id=ticket_id)
+        ticket_permalink = settings.POWERDISPATCHER_TICKET_URL.format(
+            ticket_id=ticket_id
+        )
         self.navigate_to(ticket_permalink)
 
-        created_datetime_str = WebDriverWait(self.driver, timeout=20).until(
-            EC.visibility_of_element_located(
-                (
-                    By.XPATH,
-                    "//span[contains(@class, 'datetime-month')]/parent::td"
+        created_datetime_str = (
+            WebDriverWait(self.driver, timeout=20)
+            .until(
+                EC.visibility_of_element_located(
+                    (By.XPATH, "//span[contains(@class, 'datetime-month')]/parent::td")
                 )
             )
-        ).text
+            .text
+        )
 
         # Expected format Oct 03 2022 09:38 AM EDT
-        created_datetime_obj = get_datetime_obj_from_str(created_datetime_str, "%b %d %Y %I:%M %p")
+        created_datetime_obj = get_datetime_obj_from_str(
+            created_datetime_str, "%b %d %Y %I:%M %p"
+        )
 
         job_description_element = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "job_desc")
-            )
+            EC.presence_of_element_located((By.ID, "job_desc"))
         )
         job_description_selector = Select(job_description_element)
         job_description_str = job_description_selector.first_selected_option.text
 
         customer_phone = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "phone1")
-            )
+            EC.presence_of_element_located((By.ID, "phone1"))
         )
         customer_phone_str = customer_phone.get_attribute("value")
 
-        technician = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "select2-ddTech-container")
-            )
-        ).text
+        technician = (
+            WebDriverWait(self.driver, timeout=20)
+            .until(EC.presence_of_element_located((By.ID, "select2-ddTech-container")))
+            .text
+        )
 
-        if 'select a technician' in technician.lower():
+        if "select a technician" in technician.lower():
             technician = None
 
-        company = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "select2-ddJobCompany-container")
+        company = (
+            WebDriverWait(self.driver, timeout=20)
+            .until(
+                EC.presence_of_element_located(
+                    (By.ID, "select2-ddJobCompany-container")
+                )
             )
-        ).text
+            .text
+        )
 
-        zip_code = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "zip")
-            )
-        ).get_attribute("value")
-        address = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "address")
-            )
-        ).get_attribute("value")
+        zip_code = (
+            WebDriverWait(self.driver, timeout=20)
+            .until(EC.presence_of_element_located((By.ID, "zip")))
+            .get_attribute("value")
+        )
+        address = (
+            WebDriverWait(self.driver, timeout=20)
+            .until(EC.presence_of_element_located((By.ID, "address")))
+            .get_attribute("value")
+        )
 
         job_date_element = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "job_date")
-            )
+            EC.presence_of_element_located((By.ID, "job_date"))
         )
 
         # Expected format 2022-10-20
@@ -487,15 +450,14 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         job_date_obj = datetime.datetime.strptime(job_date_str, "%Y-%m-%d")
 
         status_element = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "ddStatus")
-            )
+            EC.presence_of_element_located((By.ID, "ddStatus"))
         )
         status_selector = Select(status_element)
         status = status_selector.first_selected_option.text
 
-        technician_parts = self.driver. \
-            find_element(By.NAME, "txtParts").get_attribute("value")
+        technician_parts = self.driver.find_element(By.NAME, "txtParts").get_attribute(
+            "value"
+        )
         if technician_parts:
             technician_parts = Decimal(technician_parts)
         else:
@@ -503,11 +465,8 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
 
         company_parts = 0
         try:
-            company_parts_elements = WebDriverWait(self.driver, timeout=2)\
-                .until(
-                    EC.presence_of_all_elements_located(
-                        (By.ID, "compparts")
-                    )
+            company_parts_elements = WebDriverWait(self.driver, timeout=2).until(
+                EC.presence_of_all_elements_located((By.ID, "compparts"))
             )
             for part in company_parts_elements:
                 value = part.get_attribute("value")
@@ -518,9 +477,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         cash_payment = 0
         try:
             cash_payments = WebDriverWait(self.driver, timeout=2).until(
-                EC.presence_of_all_elements_located(
-                    (By.ID, "cashamount")
-                )
+                EC.presence_of_all_elements_located((By.ID, "cashamount"))
             )
             for payment in cash_payments:
                 value = payment.get_attribute("value")
@@ -531,9 +488,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         credit_payment = 0
         try:
             credit_payments = WebDriverWait(self.driver, timeout=2).until(
-                EC.presence_of_all_elements_located(
-                    (By.ID, "amount")
-                )
+                EC.presence_of_all_elements_located((By.ID, "amount"))
             )
             for payment in credit_payments:
                 value = payment.get_attribute("value")
@@ -541,9 +496,8 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         except Exception:
             pass
 
-        if status == 'Canceled':
-            who_canceled_element = WebDriverWait(self.driver, timeout=20)\
-                .until(
+        if status == "Canceled":
+            who_canceled_element = WebDriverWait(self.driver, timeout=20).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "//*[@id='cancel_slide']/fieldset/select")
                 )
@@ -551,14 +505,14 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             who_canceled_element_selector = Select(who_canceled_element)
 
             try:
-                selected_option = \
+                selected_option = (
                     who_canceled_element_selector.first_selected_option.text
+                )
                 who_canceled_str = selected_option if selected_option else None
             except Exception:
                 who_canceled_str = None
 
-            why_canceled_element = WebDriverWait(self.driver, timeout=20)\
-                .until(
+            why_canceled_element = WebDriverWait(self.driver, timeout=20).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "//*[@id='cancel_slide']/fieldset/input")
                 )
@@ -571,9 +525,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
 
         # LOG PAGE
         logs_btn = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located(
-                (By.ID, "addjob-menu-comments")
-            )
+            EC.presence_of_element_located((By.ID, "addjob-menu-comments"))
         )
         logs_btn.click()
         comments_child_elements = WebDriverWait(self.driver, timeout=20).until(
@@ -589,7 +541,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         accepted_time = None
         first_call_time = None
         closed_time = None
-        closed_by_titles = ['job canceled', 'job closed', 'job delayed']
+        closed_by_titles = ["job canceled", "job closed", "job delayed"]
         for comment_child_element in comments_child_elements:
             element_class = comment_child_element.get_attribute("class")
             if element_class == "date-bar":
@@ -601,47 +553,67 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 lower_comment_title = comment_title.lower()
                 if lower_comment_title == "job comment created":
                     comment_content = comment_child_element.find_element(
-                        By.XPATH,
-                        "./tbody/tr/td[2]/div[2]/div/pre"
+                        By.XPATH, "./tbody/tr/td[2]/div[2]/div/pre"
                     ).text
-                    match_found = re.search(r'ACCEPTED job', comment_content)
+                    match_found = re.search(r"ACCEPTED job", comment_content)
                     if match_found and not accepted_time:
-                        accepted_time = date_label + " " + comment_child_element. \
-                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
-                    match_found = re.search(r'CLOSED job', comment_content)
-                    if match_found and not closed_time:
-                        closed_time = date_label + " " + comment_child_element. \
-                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
-                    if technician:
-                        match_found = re.search(
-                            r'To: ',
-                            comment_content
+                        accepted_time = (
+                            date_label
+                            + " "
+                            + comment_child_element.find_element(
+                                By.XPATH, "./tbody/tr/td[2]/div[1]/span"
+                            ).text
                         )
+                    match_found = re.search(r"CLOSED job", comment_content)
+                    if match_found and not closed_time:
+                        closed_time = (
+                            date_label
+                            + " "
+                            + comment_child_element.find_element(
+                                By.XPATH, "./tbody/tr/td[2]/div[1]/span"
+                            ).text
+                        )
+                    if technician:
+                        match_found = re.search(r"To: ", comment_content)
                         if match_found and not sent_time:
-                            sent_time = date_label + " " + comment_child_element. \
-                                find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
+                            sent_time = (
+                                date_label
+                                + " "
+                                + comment_child_element.find_element(
+                                    By.XPATH, "./tbody/tr/td[2]/div[1]/span"
+                                ).text
+                            )
                 elif lower_comment_title == "job created":
-                    created_by = comment_child_element. \
-                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]").text
+                    created_by = comment_child_element.find_element(
+                        By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]"
+                    ).text
                     comment_content = comment_child_element.find_element(
-                        By.XPATH,
-                        "./tbody/tr/td[2]/div[2]/div/pre"
+                        By.XPATH, "./tbody/tr/td[2]/div[2]/div/pre"
                     ).text
                     match_found = re.search(
-                        r'Job sent to {techinian}'.format(techinian=technician),
-                        comment_content
+                        r"Job sent to {techinian}".format(techinian=technician),
+                        comment_content,
                     )
                     if match_found and not sent_time:
-                        sent_time = date_label + " " + comment_child_element. \
-                            find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
-                elif lower_comment_title == "conference created" \
-                        and not sent_time:
-                    first_call_time = date_label + " " + comment_child_element. \
-                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span").text
-                elif lower_comment_title in closed_by_titles \
-                        and not closed_by:
-                    closed_by = comment_child_element. \
-                        find_element(By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]").text
+                        sent_time = (
+                            date_label
+                            + " "
+                            + comment_child_element.find_element(
+                                By.XPATH, "./tbody/tr/td[2]/div[1]/span"
+                            ).text
+                        )
+                elif lower_comment_title == "conference created" and not sent_time:
+                    first_call_time = (
+                        date_label
+                        + " "
+                        + comment_child_element.find_element(
+                            By.XPATH, "./tbody/tr/td[2]/div[1]/span"
+                        ).text
+                    )
+                elif lower_comment_title in closed_by_titles and not closed_by:
+                    closed_by = comment_child_element.find_element(
+                        By.XPATH, "./tbody/tr/td[2]/div[1]/span[2]"
+                    ).text
 
         sent_at = None
         accepted_at = None
@@ -652,21 +624,13 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         # Expected format: Monday, September 19 2022 03:30 PM EDT
         expected_pattern = "%A, %B %d %Y %I:%M %p"
         if sent_time:
-            sent_at = get_datetime_obj_from_str(
-                sent_time, expected_pattern
-            )
+            sent_at = get_datetime_obj_from_str(sent_time, expected_pattern)
         if accepted_time:
-            accepted_at = get_datetime_obj_from_str(
-                accepted_time, expected_pattern
-            )
+            accepted_at = get_datetime_obj_from_str(accepted_time, expected_pattern)
         if first_call_time:
-            first_call_at = get_datetime_obj_from_str(
-                first_call_time, expected_pattern
-            )
+            first_call_at = get_datetime_obj_from_str(first_call_time, expected_pattern)
         if closed_time:
-            closed_at = get_datetime_obj_from_str(
-                closed_time, expected_pattern
-            )
+            closed_at = get_datetime_obj_from_str(closed_time, expected_pattern)
 
         ticket_data = {
             "powerdispatch_ticket_id": ticket_id,
@@ -696,8 +660,9 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         return ticket_data
 
     def get_job_descriptions(self):
-        all_job_descriptions_permalink \
-            = "https://lite.serviceslogin.com/settings_jobdesc.php?enabled=2"
+        all_job_descriptions_permalink = (
+            "https://lite.serviceslogin.com/settings_jobdesc.php?enabled=2"
+        )
         self.navigate_to(all_job_descriptions_permalink)
         job_description_rows = WebDriverWait(self.driver, timeout=20).until(
             EC.presence_of_all_elements_located(
@@ -708,9 +673,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
 
         job_descriptions = []
         for job_description_row in job_description_rows:
-            data = job_description_row.find_elements(
-                By.XPATH, "./descendant::td"
-            )
+            data = job_description_row.find_elements(By.XPATH, "./descendant::td")
             description = data[0].text
             category = data[2].text
             enabled = data[3].find_element(By.XPATH, "./descendant::span").text
@@ -723,7 +686,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         return job_descriptions
 
     def close_driver(self):
-        self.log('Closing driver')
+        self.log("Closing driver")
 
         try:
             self.driver.quit()

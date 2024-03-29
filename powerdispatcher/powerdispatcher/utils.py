@@ -4,7 +4,7 @@ from dateutil import relativedelta
 
 
 def get_datetime_obj_from_str(datetime_str, pattern):
-    cleaned_str = datetime_str.strip().rsplit(' ', 1)[0]
+    cleaned_str = datetime_str.strip().rsplit(" ", 1)[0]
     datetime_obj = datetime.datetime.strptime(cleaned_str, pattern)
     return datetime_obj
 

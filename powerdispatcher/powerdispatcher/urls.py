@@ -1,4 +1,4 @@
-app_name = 'powerdispatcher'
+app_name = "powerdispatcher"
 
 
 urlpatterns = []

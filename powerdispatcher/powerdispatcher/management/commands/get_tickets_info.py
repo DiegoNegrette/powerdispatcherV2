@@ -3,19 +3,13 @@ from django.core.management.base import BaseCommand
 from powerdispatcher.service import PowerdispatchManager
 from powerdispatcher.tasks import get_tickets_info
 
-TICKET_IDS = [
-    "LMFD2",
-    "11HVH",
-    "B2YY3",
-    "FEGV4",
-    "H2DEH"
-]
+TICKET_IDS = ["LMFD2", "11HVH", "B2YY3", "FEGV4", "H2DEH"]
 
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument("--debug", action='store_true', default=False)
-        parser.add_argument('--ticket_id')
+        parser.add_argument("--debug", action="store_true", default=False)
+        parser.add_argument("--ticket_id")
 
     def handle(self, *args, **options):
         ticket_ids = []

@@ -21,8 +21,8 @@ class Date(ModifiedTimeStampMixin, TimeStampedModel):
     day_short_name = models.CharField(max_length=3)
 
     class Meta:
-        verbose_name_plural = 'Dates'
-        ordering = ('-date',)
+        verbose_name_plural = "Dates"
+        ordering = ("-date",)
 
     def __str__(self):
         return f"{self.date}"

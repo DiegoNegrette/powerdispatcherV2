@@ -13,10 +13,10 @@ def linkify(field_name):
     def _linkify(obj):
         linked_obj = getattr(obj, field_name)
         if linked_obj is None:
-            return '-'
+            return "-"
         app_label = linked_obj._meta.app_label
         model_name = linked_obj._meta.model_name
-        view_name = 'admin:{}_{}_change'.format(app_label, model_name)
+        view_name = "admin:{}_{}_change".format(app_label, model_name)
         link_url = reverse(view_name, args=[linked_obj.pk])
         return format_html('<a href="{}">{}</a>', link_url, linked_obj)
 
@@ -25,6 +25,4 @@ def linkify(field_name):
 
 
 def format_link(link, text):
-    return format_html(
-        '<a href="{}" target="_blank">{}</a>', link, text
-    )
+    return format_html('<a href="{}" target="_blank">{}</a>', link, text)

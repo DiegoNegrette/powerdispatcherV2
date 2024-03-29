@@ -13,12 +13,10 @@ class Branch(ModifiedTimeStampMixin, TimeStampedModel):
     zip_code = models.CharField(max_length=5, null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = 'Branches'
-        ordering = ('name',)
+        verbose_name_plural = "Branches"
+        ordering = ("name",)
         constraints = [
-            models.UniqueConstraint(
-                fields=['name'], name='branch_name_unique'
-            )
+            models.UniqueConstraint(fields=["name"], name="branch_name_unique")
         ]
 
     def __str__(self):

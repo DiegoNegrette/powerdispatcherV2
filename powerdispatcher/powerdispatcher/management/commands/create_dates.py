@@ -7,17 +7,17 @@ from powerdispatcher.models import Date
 
 
 class Command(BaseCommand):
-    help = 'Load the current database with Dates'
+    help = "Load the current database with Dates"
 
     def add_arguments(self, parser):
-        parser.add_argument('--file', type=str)
+        parser.add_argument("--file", type=str)
 
     def handle(self, *args, **options):
-        cmd_name = 'create_dates'
-        filename = options.get('file')
+        cmd_name = "create_dates"
+        filename = options.get("file")
 
         processed = 0
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             csv_reader = csv.DictReader(f)
             rows = list(csv_reader)
 
@@ -40,9 +40,9 @@ class Command(BaseCommand):
                     "day_of_year": row["day_of_year"],
                     "day_name": row["day_name"],
                     "day_short_name": row["day_short_name"],
-                }
+                },
             )
             processed += 1
-        self.stdout.write(self.style.SUCCESS(
-            f'[{cmd_name}] Successfully created {processed} Dates'
-        ))
+        self.stdout.write(
+            self.style.SUCCESS(f"[{cmd_name}] Successfully created {processed} Dates")
+        )

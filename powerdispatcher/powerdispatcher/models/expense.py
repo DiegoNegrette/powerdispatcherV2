@@ -12,8 +12,8 @@ class Expense(ModifiedTimeStampMixin, TimeStampedModel):
     amount = models.DecimalField(max_digits=7, decimal_places=2)
 
     class Meta:
-        verbose_name_plural = 'Expenses'
-        ordering = ('-date',)
+        verbose_name_plural = "Expenses"
+        ordering = ("-date",)
 
     def __str__(self):
         return f"{self.branch.name} - {self.source.name} - {self.amount}"

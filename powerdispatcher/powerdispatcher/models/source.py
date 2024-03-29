@@ -10,8 +10,8 @@ class Source(ModifiedTimeStampMixin, TimeStampedModel):
     category = models.TextField()
 
     class Meta:
-        verbose_name_plural = 'Sources'
-        ordering = ('name',)
+        verbose_name_plural = "Sources"
+        ordering = ("name",)
         unique_together = ["name", "category"]
 
     def __str__(self):

@@ -18,12 +18,10 @@ class Technician(ModifiedTimeStampMixin, TimeStampedModel):
     active = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name_plural = 'Technicians'
-        ordering = ('name',)
+        verbose_name_plural = "Technicians"
+        ordering = ("name",)
         constraints = [
-            models.UniqueConstraint(
-                fields=['name'], name='technician_name_unique'
-            )
+            models.UniqueConstraint(fields=["name"], name="technician_name_unique")
         ]
 
     def __str__(self):

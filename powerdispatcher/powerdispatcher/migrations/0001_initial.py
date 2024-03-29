@@ -10,314 +10,655 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Branch',
+            name="Branch",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=255)),
-                ('city', models.CharField(blank=True, max_length=255, null=True)),
-                ('address', models.CharField(blank=True, max_length=255, null=True)),
-                ('zip_code', models.CharField(blank=True, max_length=5, null=True)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=255)),
+                ("city", models.CharField(blank=True, max_length=255, null=True)),
+                ("address", models.CharField(blank=True, max_length=255, null=True)),
+                ("zip_code", models.CharField(blank=True, max_length=5, null=True)),
             ],
             options={
-                'verbose_name_plural': 'Branches',
-                'ordering': ('name',),
+                "verbose_name_plural": "Branches",
+                "ordering": ("name",),
             },
         ),
         migrations.CreateModel(
-            name='Customer',
+            name="Customer",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('phone', models.CharField(max_length=10)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("phone", models.CharField(max_length=10)),
             ],
             options={
-                'verbose_name_plural': 'Customers',
-                'ordering': ('id',),
+                "verbose_name_plural": "Customers",
+                "ordering": ("id",),
             },
         ),
         migrations.CreateModel(
-            name='Date',
+            name="Date",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('date', models.DateField(primary_key=True, serialize=False)),
-                ('year', models.IntegerField()),
-                ('quarter_number', models.IntegerField()),
-                ('quarter_name', models.CharField(max_length=2)),
-                ('month_number', models.IntegerField()),
-                ('month_name', models.CharField(max_length=10)),
-                ('month_short_name', models.CharField(max_length=4)),
-                ('week_of_year', models.IntegerField()),
-                ('week_of_month', models.IntegerField()),
-                ('day', models.IntegerField()),
-                ('day_of_week', models.IntegerField()),
-                ('day_of_year', models.IntegerField()),
-                ('day_name', models.CharField(max_length=10)),
-                ('day_short_name', models.CharField(max_length=3)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("date", models.DateField(primary_key=True, serialize=False)),
+                ("year", models.IntegerField()),
+                ("quarter_number", models.IntegerField()),
+                ("quarter_name", models.CharField(max_length=2)),
+                ("month_number", models.IntegerField()),
+                ("month_name", models.CharField(max_length=10)),
+                ("month_short_name", models.CharField(max_length=4)),
+                ("week_of_year", models.IntegerField()),
+                ("week_of_month", models.IntegerField()),
+                ("day", models.IntegerField()),
+                ("day_of_week", models.IntegerField()),
+                ("day_of_year", models.IntegerField()),
+                ("day_name", models.CharField(max_length=10)),
+                ("day_short_name", models.CharField(max_length=3)),
             ],
             options={
-                'verbose_name_plural': 'Dates',
-                'ordering': ('-date',),
+                "verbose_name_plural": "Dates",
+                "ordering": ("-date",),
             },
         ),
         migrations.CreateModel(
-            name='Dispatcher',
+            name="Dispatcher",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('user', models.CharField(blank=True, max_length=255, null=True)),
-                ('name', models.CharField(max_length=255)),
-                ('start_date', models.DateField(blank=True, null=True)),
-                ('end_date', models.DateField(blank=True, null=True)),
-                ('enabled', models.BooleanField(default=True)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("user", models.CharField(blank=True, max_length=255, null=True)),
+                ("name", models.CharField(max_length=255)),
+                ("start_date", models.DateField(blank=True, null=True)),
+                ("end_date", models.DateField(blank=True, null=True)),
+                ("enabled", models.BooleanField(default=True)),
             ],
             options={
-                'verbose_name_plural': 'Dispatchers',
-                'ordering': ('name',),
+                "verbose_name_plural": "Dispatchers",
+                "ordering": ("name",),
             },
         ),
         migrations.CreateModel(
-            name='Expense',
+            name="Expense",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=7)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("amount", models.DecimalField(decimal_places=2, max_digits=7)),
             ],
             options={
-                'verbose_name_plural': 'Expenses',
-                'ordering': ('-date',),
+                "verbose_name_plural": "Expenses",
+                "ordering": ("-date",),
             },
         ),
         migrations.CreateModel(
-            name='JobDescription',
+            name="JobDescription",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('description', models.CharField(max_length=255)),
-                ('category', models.CharField(blank=True, max_length=255, null=True)),
-                ('enabled', models.BooleanField(default=True)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("description", models.CharField(max_length=255)),
+                ("category", models.CharField(blank=True, max_length=255, null=True)),
+                ("enabled", models.BooleanField(default=True)),
             ],
             options={
-                'verbose_name_plural': 'Job Descriptions',
-                'ordering': ('description',),
+                "verbose_name_plural": "Job Descriptions",
+                "ordering": ("description",),
             },
         ),
         migrations.CreateModel(
-            name='Location',
+            name="Location",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('zip_code', models.CharField(max_length=5, primary_key=True, serialize=False)),
-                ('primary_city', models.CharField(max_length=255)),
-                ('county', models.CharField(max_length=255)),
-                ('state', models.CharField(max_length=255)),
-                ('state_short', models.CharField(max_length=255)),
-                ('country', models.CharField(max_length=255)),
-                ('latitude', models.DecimalField(decimal_places=6, max_digits=9)),
-                ('longitude', models.DecimalField(decimal_places=6, max_digits=9)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                (
+                    "zip_code",
+                    models.CharField(max_length=5, primary_key=True, serialize=False),
+                ),
+                ("primary_city", models.CharField(max_length=255)),
+                ("county", models.CharField(max_length=255)),
+                ("state", models.CharField(max_length=255)),
+                ("state_short", models.CharField(max_length=255)),
+                ("country", models.CharField(max_length=255)),
+                ("latitude", models.DecimalField(decimal_places=6, max_digits=9)),
+                ("longitude", models.DecimalField(decimal_places=6, max_digits=9)),
             ],
             options={
-                'verbose_name_plural': 'Locations',
-                'ordering': ('country', 'state', 'primary_city'),
+                "verbose_name_plural": "Locations",
+                "ordering": ("country", "state", "primary_city"),
             },
         ),
         migrations.CreateModel(
-            name='ProjectConfiguration',
+            name="ProjectConfiguration",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('powerdispatch_account', models.CharField(default='Account placeholder', max_length=100, verbose_name='Account id used to connect to powerdispatch app')),
-                ('powerdispatch_username', models.CharField(default='Username placeholder', max_length=100, verbose_name='Account username used to connect to powerdispatch app')),
-                ('powerdispatch_password', models.CharField(default='Account placeholder', max_length=100, verbose_name='Account password used to connect to powerdispatch app')),
-                ('first_scraping_date', models.DateField(default=django.utils.timezone.localtime, verbose_name='All scraped records will start from this date')),
-                ('max_scraping_days', models.IntegerField(default=7, verbose_name='Max amount of days to scrape')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "powerdispatch_account",
+                    models.CharField(
+                        default="Account placeholder",
+                        max_length=100,
+                        verbose_name="Account id used to connect to powerdispatch app",
+                    ),
+                ),
+                (
+                    "powerdispatch_username",
+                    models.CharField(
+                        default="Username placeholder",
+                        max_length=100,
+                        verbose_name="Account username used to connect to powerdispatch app",
+                    ),
+                ),
+                (
+                    "powerdispatch_password",
+                    models.CharField(
+                        default="Account placeholder",
+                        max_length=100,
+                        verbose_name="Account password used to connect to powerdispatch app",
+                    ),
+                ),
+                (
+                    "first_scraping_date",
+                    models.DateField(
+                        default=django.utils.timezone.localtime,
+                        verbose_name="All scraped records will start from this date",
+                    ),
+                ),
+                (
+                    "max_scraping_days",
+                    models.IntegerField(
+                        default=7, verbose_name="Max amount of days to scrape"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Project configuration',
-                'verbose_name_plural': 'Project configurations',
+                "verbose_name": "Project configuration",
+                "verbose_name_plural": "Project configurations",
             },
         ),
         migrations.CreateModel(
-            name='ScraperLog',
+            name="ScraperLog",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('from_date', models.DateField()),
-                ('to_date', models.DateField()),
-                ('start_time', models.DateTimeField()),
-                ('end_time', models.DateTimeField(blank=True, null=True)),
-                ('scraped_tickets', models.IntegerField(default=0)),
-                ('added_tickets', models.IntegerField(default=0)),
-                ('status', models.CharField(choices=[('Pending', 'Pending'), ('Failed', 'Failed'), ('Success', 'Success')], default='Pending', max_length=255)),
-                ('reason', models.CharField(blank=True, max_length=255, null=True)),
-                ('last_message', models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("from_date", models.DateField()),
+                ("to_date", models.DateField()),
+                ("start_time", models.DateTimeField()),
+                ("end_time", models.DateTimeField(blank=True, null=True)),
+                ("scraped_tickets", models.IntegerField(default=0)),
+                ("added_tickets", models.IntegerField(default=0)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Failed", "Failed"),
+                            ("Success", "Success"),
+                        ],
+                        default="Pending",
+                        max_length=255,
+                    ),
+                ),
+                ("reason", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "last_message",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Scraper Logs',
-                'ordering': ('-id',),
+                "verbose_name_plural": "Scraper Logs",
+                "ordering": ("-id",),
             },
         ),
         migrations.CreateModel(
-            name='Source',
+            name="Source",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.TextField()),
-                ('category', models.TextField()),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.TextField()),
+                ("category", models.TextField()),
             ],
             options={
-                'verbose_name_plural': 'Sources',
-                'ordering': ('name',),
+                "verbose_name_plural": "Sources",
+                "ordering": ("name",),
             },
         ),
         migrations.CreateModel(
-            name='Status',
+            name="Status",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=20)),
-                ('who_canceled', models.CharField(blank=True, max_length=255, null=True)),
-                ('why_canceled', models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=20)),
+                (
+                    "who_canceled",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "why_canceled",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Status',
-                'ordering': ('-id',),
+                "verbose_name_plural": "Status",
+                "ordering": ("-id",),
             },
         ),
         migrations.CreateModel(
-            name='Technician',
+            name="Technician",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=255)),
-                ('short_name', models.CharField(blank=True, max_length=255, null=True)),
-                ('address', models.TextField(blank=True, null=True)),
-                ('city', models.TextField(blank=True, null=True)),
-                ('zip_code', models.CharField(blank=True, max_length=5, null=True)),
-                ('phone', models.CharField(blank=True, max_length=10, null=True)),
-                ('contact_type', models.CharField(blank=True, max_length=255, null=True)),
-                ('first_job_date', models.DateField(blank=True, null=True)),
-                ('last_job_date', models.DateField(blank=True, null=True)),
-                ('active', models.BooleanField(default=True)),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=255)),
+                ("short_name", models.CharField(blank=True, max_length=255, null=True)),
+                ("address", models.TextField(blank=True, null=True)),
+                ("city", models.TextField(blank=True, null=True)),
+                ("zip_code", models.CharField(blank=True, max_length=5, null=True)),
+                ("phone", models.CharField(blank=True, max_length=10, null=True)),
+                (
+                    "contact_type",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("first_job_date", models.DateField(blank=True, null=True)),
+                ("last_job_date", models.DateField(blank=True, null=True)),
+                ("active", models.BooleanField(default=True)),
             ],
             options={
-                'verbose_name_plural': 'Technicians',
-                'ordering': ('name',),
+                "verbose_name_plural": "Technicians",
+                "ordering": ("name",),
             },
         ),
         migrations.CreateModel(
-            name='WorkSchedule',
+            name="WorkSchedule",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('technician_availability', models.IntegerField(default=0)),
-                ('open_day', models.BooleanField(default=True)),
-                ('open_time', models.TimeField()),
-                ('closed_time', models.TimeField()),
-                ('branch', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='powerdispatcher.branch')),
-                ('date', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='powerdispatcher.date')),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("technician_availability", models.IntegerField(default=0)),
+                ("open_day", models.BooleanField(default=True)),
+                ("open_time", models.TimeField()),
+                ("closed_time", models.TimeField()),
+                (
+                    "branch",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="powerdispatcher.branch",
+                    ),
+                ),
+                (
+                    "date",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="powerdispatcher.date",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Work Schedules',
-                'ordering': ('-date',),
+                "verbose_name_plural": "Work Schedules",
+                "ordering": ("-date",),
             },
         ),
         migrations.CreateModel(
-            name='Ticket',
+            name="Ticket",
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('powerdispatch_ticket_id', models.CharField(max_length=5)),
-                ('address', models.TextField(blank=True, null=True)),
-                ('credit_payment', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
-                ('cash_payment', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
-                ('technician_parts', models.CharField(max_length=255)),
-                ('company_parts', models.CharField(max_length=255)),
-                ('created_at', models.DateTimeField()),
-                ('sent_at', models.DateTimeField(blank=True, null=True)),
-                ('accepted_at', models.DateTimeField(blank=True, null=True)),
-                ('first_call_at', models.DateTimeField(blank=True, null=True)),
-                ('closed_at', models.DateTimeField(blank=True, null=True)),
-                ('branch', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.branch')),
-                ('closed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='tickets_closed', to='powerdispatcher.dispatcher')),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='tickets_created', to='powerdispatcher.dispatcher')),
-                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.customer')),
-                ('job_date', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.date')),
-                ('job_description', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.jobdescription')),
-                ('status', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.status')),
-                ('technician', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.technician')),
-                ('zip_code', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.location')),
+                (
+                    "created",
+                    model_utils.fields.AutoCreatedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
+                    ),
+                ),
+                (
+                    "modified",
+                    model_utils.fields.AutoLastModifiedField(
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
+                    ),
+                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("powerdispatch_ticket_id", models.CharField(max_length=5)),
+                ("address", models.TextField(blank=True, null=True)),
+                (
+                    "credit_payment",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=7),
+                ),
+                (
+                    "cash_payment",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=7),
+                ),
+                ("technician_parts", models.CharField(max_length=255)),
+                ("company_parts", models.CharField(max_length=255)),
+                ("created_at", models.DateTimeField()),
+                ("sent_at", models.DateTimeField(blank=True, null=True)),
+                ("accepted_at", models.DateTimeField(blank=True, null=True)),
+                ("first_call_at", models.DateTimeField(blank=True, null=True)),
+                ("closed_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "branch",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="powerdispatcher.branch",
+                    ),
+                ),
+                (
+                    "closed_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="tickets_closed",
+                        to="powerdispatcher.dispatcher",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="tickets_created",
+                        to="powerdispatcher.dispatcher",
+                    ),
+                ),
+                (
+                    "customer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="powerdispatcher.customer",
+                    ),
+                ),
+                (
+                    "job_date",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="powerdispatcher.date",
+                    ),
+                ),
+                (
+                    "job_description",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="powerdispatcher.jobdescription",
+                    ),
+                ),
+                (
+                    "status",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="powerdispatcher.status",
+                    ),
+                ),
+                (
+                    "technician",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="powerdispatcher.technician",
+                    ),
+                ),
+                (
+                    "zip_code",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="powerdispatcher.location",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Tickets',
-                'ordering': ('-created_at',),
+                "verbose_name_plural": "Tickets",
+                "ordering": ("-created_at",),
             },
         ),
         migrations.AddConstraint(
-            model_name='technician',
-            constraint=models.UniqueConstraint(fields=('name',), name='technician_name_unique'),
+            model_name="technician",
+            constraint=models.UniqueConstraint(
+                fields=("name",), name="technician_name_unique"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='source',
-            unique_together={('name', 'category')},
+            name="source",
+            unique_together={("name", "category")},
         ),
         migrations.AlterUniqueTogether(
-            name='location',
-            unique_together={('zip_code', 'latitude', 'latitude')},
+            name="location",
+            unique_together={("zip_code", "latitude", "latitude")},
         ),
         migrations.AddConstraint(
-            model_name='jobdescription',
-            constraint=models.UniqueConstraint(fields=('description',), name='job_description_unique'),
+            model_name="jobdescription",
+            constraint=models.UniqueConstraint(
+                fields=("description",), name="job_description_unique"
+            ),
         ),
         migrations.AddField(
-            model_name='expense',
-            name='branch',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.branch'),
+            model_name="expense",
+            name="branch",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT, to="powerdispatcher.branch"
+            ),
         ),
         migrations.AddField(
-            model_name='expense',
-            name='date',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.date'),
+            model_name="expense",
+            name="date",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT, to="powerdispatcher.date"
+            ),
         ),
         migrations.AddField(
-            model_name='expense',
-            name='source',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='powerdispatcher.source'),
+            model_name="expense",
+            name="source",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT, to="powerdispatcher.source"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='dispatcher',
-            unique_together={('user', 'name')},
+            name="dispatcher",
+            unique_together={("user", "name")},
         ),
         migrations.AddConstraint(
-            model_name='customer',
-            constraint=models.UniqueConstraint(fields=('phone',), name='customer_phone_unique'),
+            model_name="customer",
+            constraint=models.UniqueConstraint(
+                fields=("phone",), name="customer_phone_unique"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='branch',
-            constraint=models.UniqueConstraint(fields=('name',), name='branch_name_unique'),
+            model_name="branch",
+            constraint=models.UniqueConstraint(
+                fields=("name",), name="branch_name_unique"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='workschedule',
-            unique_together={('date', 'branch')},
+            name="workschedule",
+            unique_together={("date", "branch")},
         ),
         migrations.AddConstraint(
-            model_name='ticket',
-            constraint=models.UniqueConstraint(fields=('powerdispatch_ticket_id',), name='powerdispatch_ticket_unique'),
+            model_name="ticket",
+            constraint=models.UniqueConstraint(
+                fields=("powerdispatch_ticket_id",), name="powerdispatch_ticket_unique"
+            ),
         ),
     ]

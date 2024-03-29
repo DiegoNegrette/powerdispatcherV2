@@ -1,0 +1,69 @@
+import asyncio
+import aiohttp
+import time
+
+from django.core.management.base import BaseCommand
+
+
+TARGET_URL = 'http://192.168.1.149:3000'
+TARGET_ENDPOINT = '/process'
+
+
+async def make_post_request(session, data):
+    max_retries = 3
+    wait_time = 2
+    retries = 0
+    while retries < max_retries:
+        try:
+            response = await session.post(
+                TARGET_URL + TARGET_ENDPOINT,
+                json=data,
+                timeout=240
+            )
+            response_json = await response.json()
+            response.raise_for_status()
+            return response_json, response.status
+        except (
+            Exception,
+            aiohttp.ClientResponseError,
+            aiohttp.ClientConnectionError
+        ) as e:
+            retries += 1
+            print(f"Retrying request {data['batch_number']} after exception: {e}")  # noqa
+            await asyncio.sleep(wait_time)
+    return data, 500
+
+    # raise Exception("Max retries exceeded for make_post_request")
+
+
+class Command(BaseCommand):
+    # def add_arguments(self, parser):
+    #     parser.add_argument('--endpoint')
+    # ticket_id = options.get("ticket_id")
+
+    def handle(self, *args, **options):
+        async def main():
+            request_batch = []
+            for i in range(0, 10):
+                tickets_container = []
+                for j in range(0, 10):
+                    data = {
+                       "ticket_id": j
+                    }
+                    tickets_container.append(data)
+                request_batch.append({
+                    "batch_number": i,
+                    "tickets": tickets_container
+                })
+            async with aiohttp.ClientSession() as session:
+                tasks = []
+                for request in request_batch:
+                    tasks.append(make_post_request(session, request))
+                responses = await asyncio.gather(*tasks)
+
+                for idx, response_json, status in enumerate(responses):
+                    if status == 200:
+                        print(f'Success: request {response_json["batch_number"]}')  # noqa
+                    else:
+                        print(f'Failed: request {response_json["batch_number"]}')  # noqa
+        asyncio.run(main())

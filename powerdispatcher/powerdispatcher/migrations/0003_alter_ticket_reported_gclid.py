@@ -6,13 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('powerdispatcher', '0002_projectconfiguration_first_date_to_report_gclid_and_more'),
+        (
+            "powerdispatcher",
+            "0002_projectconfiguration_first_date_to_report_gclid_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ticket',
-            name='reported_gclid',
+            model_name="ticket",
+            name="reported_gclid",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
     ]

@@ -11,11 +11,11 @@ class JobDescription(ModifiedTimeStampMixin, TimeStampedModel):
     enabled = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name_plural = 'Job Descriptions'
-        ordering = ('description',)
+        verbose_name_plural = "Job Descriptions"
+        ordering = ("description",)
         constraints = [
             models.UniqueConstraint(
-                fields=['description'], name='job_description_unique'
+                fields=["description"], name="job_description_unique"
             )
         ]
 

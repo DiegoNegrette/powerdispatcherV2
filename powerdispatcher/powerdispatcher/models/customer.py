@@ -9,12 +9,10 @@ class Customer(ModifiedTimeStampMixin, TimeStampedModel):
     phone = models.CharField(max_length=10)
 
     class Meta:
-        verbose_name_plural = 'Customers'
-        ordering = ('id',)
+        verbose_name_plural = "Customers"
+        ordering = ("id",)
         constraints = [
-            models.UniqueConstraint(
-                fields=['phone'], name='customer_phone_unique'
-            )
+            models.UniqueConstraint(fields=["phone"], name="customer_phone_unique")
         ]
 
     def __str__(self):

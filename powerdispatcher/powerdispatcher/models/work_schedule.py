@@ -21,9 +21,9 @@ class WorkSchedule(ModifiedTimeStampMixin, TimeStampedModel):
     )
 
     class Meta:
-        verbose_name_plural = 'Work Schedules'
-        ordering = ('-date',)
-        unique_together = ['date', 'branch']
+        verbose_name_plural = "Work Schedules"
+        ordering = ("-date",)
+        unique_together = ["date", "branch"]
 
     def __str__(self):
         return f"{self.branch} - {self.date}"
