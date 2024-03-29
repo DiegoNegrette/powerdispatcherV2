@@ -5,6 +5,7 @@ from powerdispatcher.tasks.scraping import (
     scrape_and_upsert_powerdispatch_tickets,
     scrape_job_descriptions,
 )
+from powerdispatcher.tasks.test_task import test_task
 from powerdispatcher.tasks.update_ticket_status import update_ticket_status
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     scrape_and_upsert_powerdispatch_job_descriptions,
     scrape_and_upsert_powerdispatch_tickets,
     scrape_job_descriptions,
+    test_task,
     update_ticket_status,
 ]
