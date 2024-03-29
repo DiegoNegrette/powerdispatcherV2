@@ -17,7 +17,7 @@ class Location(ModifiedTimeStampMixin, TimeStampedModel):
     class Meta:
         verbose_name_plural = "Locations"
         ordering = ("country", "state", "primary_city")
-        unique_together = ["zip_code", "latitude", "latitude"]
+        unique_together = ["zip_code", "latitude"]
 
     def __str__(self):
         return f"{self.zip_code} / {self.state_short} - {self.primary_city}"
