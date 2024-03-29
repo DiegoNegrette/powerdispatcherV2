@@ -111,7 +111,7 @@ services:
 
     selenium-hub:
         restart: always
-        image: selenium/hub:4.5.0-20221017sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+        image: selenium/hub:4.5.0-20221017
 
         environment:
             - GRID_TIMEOUT=${GRID_TIMEOUT}
@@ -144,9 +144,12 @@ services:
         restart: always
         ports:
             - "8888:80"
+        env_file:
+            - .env.dev
+            - .env
         environment:
-            PGADMIN_DEFAULT_EMAIL:${PGADMIN_DEFAULT_EMAIL}
-            PGADMIN_DEFAULT_PASSWORD:${PGADMIN_DEFAULT_PASSWORD}
+            - PGADMIN_DEFAULT_EMAIL:${PGADMIN_DEFAULT_EMAIL}
+            - PGADMIN_DEFAULT_PASSWORD:${PGADMIN_DEFAULT_PASSWORD}
         volumes:
             - pgadmin-data:/var/lib/pgadmin
     
