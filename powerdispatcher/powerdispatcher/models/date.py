@@ -11,7 +11,7 @@ class Date(ModifiedTimeStampMixin, TimeStampedModel):
     quarter_name = models.CharField(max_length=2)
     month_number = models.IntegerField()
     month_name = models.CharField(max_length=10)
-    month_short_name = models.CharField(max_length=4)
+    month_short_name = models.CharField(max_length=5)
     week_of_year = models.IntegerField()
     week_of_month = models.IntegerField()
     day = models.IntegerField()
