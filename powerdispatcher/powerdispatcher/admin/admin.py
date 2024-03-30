@@ -26,7 +26,6 @@ from powerdispatcher.models import (
 
 admin.site.register(Branch)
 admin.site.register(Customer)
-admin.site.register(Dispatcher)
 admin.site.register(JobDescription)
 admin.site.register(Location)
 admin.site.register(ProjectConfiguration, SingletonModelAdmin)
@@ -40,9 +39,27 @@ class DateAdmin(admin.ModelAdmin):
     search_fields = ["date"]
 
 
+@admin.register(Dispatcher)
+class Dispatcher(admin.ModelAdmin):
+    search_fields = ["name", "user"]
+    list_display = ("id", "name", "user", "start_date", "end_date", "enabled")
+
+
 @admin.register(Expense)
 class ExpenseAdmin(admin.ModelAdmin):
     autocomplete_fields = ["date"]
+    list_select_related = (
+        "date",
+        "branch",
+        "source",
+    )
+    list_display = (
+        "id",
+        "date",
+        linkify("branch"),
+        linkify("source"),
+        "amount",
+    )
 
 
 @admin.register(Ticket)
@@ -55,15 +72,15 @@ class TicketAdmin(admin.ModelAdmin):
         linkify("created_by"),
         linkify("closed_by"),
     )
-    list_filter = (
-        "branch",
-        "status",
-    )
+    list_filter = ("branch",)
     list_select_related = (
+        "branch",
         "created_by",
         "closed_by",
+        "job_date",
         "job_description",
         "technician",
+        "status",
     )
     readonly_fields = ("powerdispatch_ticket_id",)
     search_fields = (

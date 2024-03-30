@@ -26,15 +26,21 @@ LOGGING = {
         },
         "file_scraper": {
             "level": "INFO",
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.TimedRotatingFileHandler",
             "filename": "logs/scraper.log",
             "formatter": "simple",
+            "when": "midnight",  # Rotate logs at midnight
+            "interval": 1,  # Rotate daily
+            "backupCount": 7,  # Keep up to 7 old log files
         },
         "file_callrail": {
             "level": "INFO",
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.TimedRotatingFileHandler",
             "filename": "logs/callrail.log",
             "formatter": "simple",
+            "when": "midnight",  # Rotate logs at midnight
+            "interval": 1,  # Rotate daily
+            "backupCount": 7,  # Keep up to 7 old log files
         },
     },
     "loggers": {

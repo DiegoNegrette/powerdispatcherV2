@@ -1,18 +1,24 @@
+import aiohttp
+import asyncio
 import json
-import requests
+
 from celery.utils.log import get_task_logger
+from django.conf import settings
 from django.db.models import Q
+from django.utils import timezone
+
+from ..utils import make_post_request
+from powerdispatcher.models import ProjectConfiguration, Ticket
 from service.celery import app
 from third_party.callrail.api import CallRailAPI
 
-from powerdispatcher.models import ProjectConfiguration, Ticket
 
-logger = get_task_logger("scraper")
+logger = get_task_logger("callrail")
 queue_name = "main_queue"
 
 
 REPORT_GCLID_URL = (
-    "https://analytics-api.getconversiondata.com/t/serverside-integration"  # noqa
+    "https://send-conversions-to-google-ads-t2px3tzmra-uc.a.run.app/conversion"
 )
 
 
@@ -50,13 +56,15 @@ def report_ticket_gclid(ticket_ids=[]):
             .order_by("job_date")
         )
 
-        # target_tickets = target_tickets[:1000]
+    target_tickets = target_tickets[0:100]
+
+    tickets_in_container = []
+    conversions_container = []
 
     for idx, ticket in enumerate(target_tickets):
         customer_phone_number = f"+1{ticket.customer.phone}"
-        # customer_phone_number = '+19566488345'
         print(
-            f"******** {idx+1}/{len(target_tickets)} Ticket id: {ticket.powerdispatch_ticket_id} - {customer_phone_number} ********"
+            f"******** {idx+1}/{len(target_tickets)} Ticket id: {ticket.powerdispatch_ticket_id} - {customer_phone_number} ********"  # noqa
         )  # noqa
         gclid = None
         sale_value = ticket.credit_payment + ticket.cash_payment
@@ -70,21 +78,66 @@ def report_ticket_gclid(ticket_ids=[]):
             if call.get("gclid", None):
                 gclid = call.get("gclid", None)
                 break
-        try:
-            data = {
-                "phoneNumber": customer_phone_number,
-                "AllParams": {"gclid": gclid},
-                "eventValue": sale_value,
-                "currency": "USD",
-                "clientID": "5b4392bb-08c8-4d81-aefa-cd03bbd46794",
-                "eventName": "Prolocksmith Sale",
-                # "eventName": "Test Sale",
-                "OrderID": ticket.powerdispatch_ticket_id,
-                "stopEnrich": True,
-            }
-            print(data)
-            r = requests.post(url=REPORT_GCLID_URL, json=data, timeout=240)
-            if r.status_code == 200:
-                ticket.mark_reported_gclid(gclid)
-        except Exception as e:
-            log_error(str(e))
+        formatted_date = ticket.created_at.strftime("%Y-%m-%d %H:%M:%S:%z")
+        formatted_date_with_colon = formatted_date[:-2] + ":" + formatted_date[-2:]
+        data = {
+            "conversion_action_id": "704314739",
+            "conversion_date_time": formatted_date_with_colon,
+            "gclid": gclid,  # noqa
+            "order_id": ticket.powerdispatch_ticket_id,
+            "conversion_value": sale_value,
+        }
+        conversions_container.append(data)
+        tickets_in_container.append({"ticket_obj": ticket, "gclid": gclid})
+
+    if not settings.GOOGLE_ADS_AUTH_TOKEN:
+        raise Exception("GOOGLE_ADS_AUTH_TOKEN needs to be set")
+
+    batch_size = 10
+    tickets_in_batch = [
+        tickets_in_container[i : i + batch_size]  # noqa
+        for i in range(0, len(tickets_in_container), batch_size)
+    ]
+
+    headers = {
+        "auth_key": settings.GOOGLE_ADS_AUTH_TOKEN,
+        "Content-Type": "application/json",
+    }
+
+    async def main():
+        async with aiohttp.ClientSession(headers=headers) as session:
+            tasks = []
+            for i in range(0, len(conversions_container), batch_size):
+                conversions = conversions_container[i : i + batch_size]  # noqa
+                tasks.append(
+                    make_post_request(
+                        REPORT_GCLID_URL,
+                        session,
+                        {
+                            "customer_id": "2874732500",
+                            "mcc_id": "5764436564",
+                            "conversions": conversions,
+                        },
+                    )
+                )
+            responses = await asyncio.gather(*tasks)
+            return responses
+
+    responses = asyncio.run(main())
+
+    update_list = []
+    update_date = timezone.now()
+    for idx, status in enumerate(responses):
+        if status == 200:
+            for ticket_dict in tickets_in_batch[idx]:
+                ticket = ticket_dict["ticket_obj"]
+                ticket.reported_gclid = ticket_dict["gclid"]
+                ticket.has_reported_gclid = True
+                ticket.reported_gclid_at = update_date
+                update_list.append(ticket)
+    Ticket.objects.bulk_update(
+        update_list, ["reported_gclid", "has_reported_gclid", "reported_gclid_at"]
+    )
+    success_message = f'Reported {len(update_list)} ticket{"s" if len(update_list) > 1 else "" } to google ads'
+    logger.info(success_message)
+    # send_slack_notification(success_message)

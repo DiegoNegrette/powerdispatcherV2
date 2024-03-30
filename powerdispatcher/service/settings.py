@@ -167,3 +167,14 @@ CALLRAIL_ACCOUNT_ID = env.str("CALLRAIL_ACCOUNT_ID", default="")
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+GOOGLE_ADS_AUTH_TOKEN = env.str("GOOGLE_ADS_AUTH_TOKEN", default=None)
+
+HOOK_SLACK_PROLOCKSMITHS_ALERTS = env.str(
+    "HOOK_SLACK_PROLOCKSMITHS_ALERTS",
+    default=None,
+)
+HOOK_SLACK_PROLOCKSMITHS_ERRORS = env.str(
+    "HOOK_SLACK_PROLOCKSMITHS_ERRORS",
+    default=None,
+)
