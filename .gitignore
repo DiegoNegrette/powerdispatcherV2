@@ -148,3 +148,5 @@ postgres
 *.xlsx
 *.json
 *.pkl
+
+*/logs/*

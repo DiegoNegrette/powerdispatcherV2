@@ -112,7 +112,8 @@ services:
     selenium-hub:
         restart: always
         image: selenium/hub:4.5.0-20221017
-
+        ports:
+            - "4444:4444"
         environment:
             - GRID_TIMEOUT=${GRID_TIMEOUT}
             - GRID_BROWSER_TIMEOUT=${GRID_TIMEOUT}
