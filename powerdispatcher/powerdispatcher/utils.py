@@ -7,6 +7,7 @@ import requests
 from typing import List, Optional
 
 from dateutil import relativedelta
+from celery.utils.log import get_task_logger
 from django.conf import settings
 
 
@@ -31,12 +32,14 @@ def trunc_date(someDate):
 
 
 async def make_post_request(url, session, data):
+    logger = get_task_logger("callrail")
     max_retries = 3
     wait_time = 2
     retries = 0
     while retries < max_retries:
         try:
             response = await session.post(url, json=data, timeout=240)
+            json = await response.json()
             response.raise_for_status()
             return response.status
         except (
@@ -45,7 +48,8 @@ async def make_post_request(url, session, data):
             aiohttp.ClientConnectionError,
         ) as e:
             retries += 1
-            print(f"Retrying request after exception: {e}")  # noqa
+            logger.error(f"Retrying request after exception: {e}")  # noqa
+            logger.error(json)
             await asyncio.sleep(wait_time)
     return 500
 

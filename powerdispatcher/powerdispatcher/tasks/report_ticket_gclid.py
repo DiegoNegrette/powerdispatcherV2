@@ -7,7 +7,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
 
-from ..utils import make_post_request
+from ..utils import make_post_request, send_slack_notification
 from powerdispatcher.models import ProjectConfiguration, Ticket
 from service.celery import app
 from third_party.callrail.api import CallRailAPI
@@ -140,4 +140,11 @@ def report_ticket_gclid(ticket_ids=[]):
     )
     success_message = f'Reported {len(update_list)} ticket{"s" if len(update_list) > 1 else "" } to google ads'
     logger.info(success_message)
-    # send_slack_notification(success_message)
+
+    blocks = [
+        {"type": "section", "text": {"type": "mrkdwn", "text": success_message}},
+    ]
+    send_slack_notification(
+        blocks=blocks,
+        url=settings.HOOK_SLACK_PROLOCKSMITHS_ALERTS,
+    )
