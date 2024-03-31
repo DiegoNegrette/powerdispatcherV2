@@ -10,7 +10,7 @@ from django.conf import settings
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as EC
 # from selenium.webdriver.support.ui import WebDriverWait
-from powerdispatcher.powerdispatcher.utils import report_to_slack
+from powerdispatcher.utils import report_to_slack
 from service.celery import app
 
 from powerdispatcher.models import ProjectConfiguration, ScraperLog
@@ -159,10 +159,18 @@ def scrape_and_upsert_powerdispatch_tickets():
     if not scraping_completed:
         report_lines.append("Scraper Log:")
         report_lines.append(f"Id: {scraper_log.id}")
-        report_lines.append(f"From date: {scraper_log.from_date.strftime("%Y-%m-%d %H:%M:%S")}")
-        report_lines.append(f"To date: {scraper_log.to_date.strftime("%Y-%m-%d %H:%M:%S")}")
-        report_lines.append(f"Start time: {scraper_log.start_time.strftime("%Y-%m-%d %H:%M:%S")}")
-        report_lines.append(f"End time: {scraper_log.end_time.strftime("%Y-%m-%d %H:%M:%S")}")
+        report_lines.append(
+            f"From date: {scraper_log.from_date.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        report_lines.append(
+            f"To date: {scraper_log.to_date.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        report_lines.append(
+            f"Start time: {scraper_log.start_time.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        report_lines.append(
+            f"End time: {scraper_log.end_time.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
         report_lines.append(f"Scraped_tickets: {scraper_log.scraped_tickets}")
         report_lines.append(f"Added_tickets: {scraper_log.added_tickets}")
         report_lines.append(f"Status: {scraper_log.status}")
@@ -204,10 +212,16 @@ def scrape_and_upsert_powerdispatch_tickets():
     scraper_log.save(update_fields=["scraped_tickets", "added_tickets"])
     report_lines.append("Scraper Log:")
     report_lines.append(f"Id: {scraper_log.id}")
-    report_lines.append(f"From date: {scraper_log.from_date.strftime('%Y-%m-%d %H:%M:%S')}")
+    report_lines.append(
+        f"From date: {scraper_log.from_date.strftime('%Y-%m-%d %H:%M:%S')}"
+    )
     report_lines.append(f"To date: {scraper_log.to_date.strftime('%Y-%m-%d %H:%M:%S')}")
-    report_lines.append(f"Start time: {scraper_log.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-    report_lines.append(f"End time: {scraper_log.end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    report_lines.append(
+        f"Start time: {scraper_log.start_time.strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+    report_lines.append(
+        f"End time: {scraper_log.end_time.strftime('%Y-%m-%d %H:%M:%S')}"
+    )
     report_lines.append(f"Scraped_tickets: {scraper_log.scraped_tickets}")
     report_lines.append(f"Added_tickets: {scraper_log.added_tickets}")
     report_lines.append(f"Status: {scraper_log.status}")
