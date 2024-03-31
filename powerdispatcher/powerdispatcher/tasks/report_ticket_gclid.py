@@ -61,6 +61,8 @@ def report_ticket_gclid(ticket_ids=[]):
     tickets_in_container = []
     conversions_container = []
 
+    discarded_tickets = []
+
     for idx, ticket in enumerate(target_tickets):
         customer_phone_number = f"+1{ticket.customer.phone}"
         print(
@@ -73,11 +75,17 @@ def report_ticket_gclid(ticket_ids=[]):
         if not calls:
             # What to do when ticket not found in calls
             ticket.mark_empty_callrail_logs()
+            discarded_tickets.append(f"- {ticket.id}")
             continue
         for call in calls:
             if call.get("gclid", None):
                 gclid = call.get("gclid", None)
                 break
+
+        if not gclid:
+            discarded_tickets.append(f"- {ticket.id}")
+            continue
+
         # Assuming ticket.created_at is your datetime object
         ticket_created_at = ticket.created_at
 
@@ -151,10 +159,11 @@ def report_ticket_gclid(ticket_ids=[]):
                 report_lines.append(
                     f"******** {idx+1}/{len(target_tickets)} Ticket id: {ticket.powerdispatch_ticket_id} - Phone: +1 {ticket.customer.phone} - GCLID: {ticket.reported_gclid} ********"  # noqa
                 )
+    report_lines.append(f"Discarded tickets:{'\n'.join(discarded_tickets)}")
     Ticket.objects.bulk_update(
         update_list, ["reported_gclid", "has_reported_gclid", "reported_gclid_at"]
     )
-    success_message = f'Reported {len(update_list)} ticket{"s" if len(update_list) > 1 else "" } to google ads'
+    success_message = f'\nReported {len(update_list)} ticket{"s" if len(update_list) > 1 else "" } to google ads'
     report_lines.append(success_message)
     report_lines.append("```")
     text_report = "\n".join(report_lines)
