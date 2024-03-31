@@ -159,7 +159,8 @@ def report_ticket_gclid(ticket_ids=[]):
                 report_lines.append(
                     f"******** {idx+1}/{len(target_tickets)} Ticket id: {ticket.powerdispatch_ticket_id} - Phone: +1 {ticket.customer.phone} - GCLID: {ticket.reported_gclid} ********"  # noqa
                 )
-    report_lines.append(f"Discarded tickets:{'\n'.join(discarded_tickets)}")
+    discarded_tickets_msg = "\n".join(discarded_tickets)
+    report_lines.append(f"Discarded tickets:{discarded_tickets_msg}")
     Ticket.objects.bulk_update(
         update_list, ["reported_gclid", "has_reported_gclid", "reported_gclid_at"]
     )
