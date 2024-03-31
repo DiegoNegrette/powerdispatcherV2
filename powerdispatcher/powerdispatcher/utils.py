@@ -143,7 +143,7 @@ def report_to_slack(task_title, report_lines, hook_url, logger):
 
     send_slack_notification(
         blocks=blocks,
-        url=,
+        url=hook_url,
     )
 
 
