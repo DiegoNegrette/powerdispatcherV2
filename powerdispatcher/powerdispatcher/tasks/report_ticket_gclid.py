@@ -7,7 +7,12 @@ from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
 
-from ..utils import make_post_request, send_slack_notification
+from ..utils import (
+    convert_array_of_strings_in_array_of_strings_with_limited_length,
+    make_post_request,
+    send_slack_notification,
+    split_string,
+)
 from powerdispatcher.models import ProjectConfiguration, Ticket
 from service.celery import app
 from third_party.callrail.api import CallRailAPI
@@ -61,7 +66,7 @@ def report_ticket_gclid(ticket_ids=[]):
     tickets_in_container = []
     conversions_container = []
 
-    discarded_tickets = []
+    discarded_tickets = ["Discarded tickets\n:"]
 
     for idx, ticket in enumerate(target_tickets):
         customer_phone_number = f"+1{ticket.customer.phone}"
@@ -83,6 +88,7 @@ def report_ticket_gclid(ticket_ids=[]):
                 break
 
         if not gclid:
+            ticket.mark_empty_callrail_logs()
             discarded_tickets.append(f"- {ticket.id}")
             continue
 
@@ -147,7 +153,6 @@ def report_ticket_gclid(ticket_ids=[]):
     update_list = []
     update_date = timezone.now()
     report_lines = []
-    report_lines.append("```")
     for idx, status in enumerate(responses):
         if status == 200:
             for ticket_dict in tickets_in_batch[idx]:
@@ -157,21 +162,35 @@ def report_ticket_gclid(ticket_ids=[]):
                 ticket.reported_gclid_at = update_date
                 update_list.append(ticket)
                 report_lines.append(
-                    f"******** {idx+1}/{len(target_tickets)} Ticket id: {ticket.powerdispatch_ticket_id} - Phone: +1 {ticket.customer.phone} - GCLID: {ticket.reported_gclid} ********"  # noqa
+                    f"******** Ticket id: {ticket.powerdispatch_ticket_id} - Phone: +1{ticket.customer.phone} - GCLID: {ticket.reported_gclid} ********"  # noqa
                 )
-    discarded_tickets_msg = "\n".join(discarded_tickets)
-    report_lines.append(f"Discarded tickets:{discarded_tickets_msg}")
+    report_lines = report_lines + discarded_tickets
     Ticket.objects.bulk_update(
         update_list, ["reported_gclid", "has_reported_gclid", "reported_gclid_at"]
     )
     success_message = f'\nReported {len(update_list)} ticket{"s" if len(update_list) > 1 else "" } to google ads'
     report_lines.append(success_message)
-    report_lines.append("```")
-    text_report = "\n".join(report_lines)
-    logger.info(text_report)
-    blocks = [
-        {"type": "section", "text": {"type": "mrkdwn", "text": text_report}},
-    ]
+    MAX_LENGTH_SLACK_MESSAGE = 3000
+    text_report_array = (
+        convert_array_of_strings_in_array_of_strings_with_limited_length(
+            report_lines, MAX_LENGTH_SLACK_MESSAGE - 20
+        )
+    )
+    blocks = []
+    TASK_TITLE = "REPORT TICKET GCLID TASK:\n\n"
+    for idx, text in enumerate(text_report_array):
+        message = f"```\n{TASK_TITLE if idx == 0 else ''}{text}```"
+        blocks.append(
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": message,
+                },
+            }
+        )
+        logger.info(message)
+
     send_slack_notification(
         blocks=blocks,
         url=settings.HOOK_SLACK_PROLOCKSMITHS_ALERTS,

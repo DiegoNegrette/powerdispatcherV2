@@ -73,6 +73,52 @@ async def make_post_request(url, session, data):
 #             return response.status
 
 
+def split_string(input_string, max_length=3000):
+    # Initialize an empty list to store the substrings
+    substrings = []
+
+    # Iterate over the input string with a step of max_length
+    for i in range(0, len(input_string), max_length):
+        # Extract a substring of maximum length max_length
+        substring = input_string[i : i + max_length]
+        # Append the substring to the list
+        substrings.append(substring)
+
+    return substrings
+
+
+def convert_array_of_strings_in_array_of_strings_with_limited_length(
+    input_list, max_length=3000
+):
+    """
+
+    Having a list of string create a new array where each item contains a string formmed by joining as much items of the first list as i can before reaching a predefined max length
+
+    This function, create_new_array, takes the input list of strings and a maximum length parameter. It iterates through the input list, concatenating strings until the maximum length is reached. When the maximum length is reached, it adds the concatenated string to the new array and starts a new string with the current string. Finally, it returns the new array containing the concatenated strings.
+
+    Args:
+        input_list (string[]): _description_
+        max_length (int, optional): _description_. Defaults to 3000.
+
+    Returns:
+        string[]
+    """
+    new_array = []
+    current_string = ""
+
+    for string in input_list:
+        if len(current_string) + len(string) <= max_length:
+            current_string += string + "\n"
+        else:
+            new_array.append(current_string)
+            current_string = string + "\n"
+
+    if current_string:
+        new_array.append(current_string)
+
+    return new_array
+
+
 def send_slack_notification(
     text: str = None,
     blocks: Optional[List[dict]] = None,
