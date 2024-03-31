@@ -8,10 +8,8 @@ from django.db.models import Q
 from django.utils import timezone
 
 from ..utils import (
-    convert_array_of_strings_in_array_of_strings_with_limited_length,
     make_post_request,
-    send_slack_notification,
-    split_string,
+    report_to_slack,
 )
 from powerdispatcher.models import ProjectConfiguration, Ticket
 from service.celery import app
@@ -66,7 +64,7 @@ def report_ticket_gclid(ticket_ids=[]):
     tickets_in_container = []
     conversions_container = []
 
-    discarded_tickets = ["Discarded tickets\n:"]
+    discarded_tickets = ["Discarded tickets:"]
 
     for idx, ticket in enumerate(target_tickets):
         customer_phone_number = f"+1{ticket.customer.phone}"
@@ -170,28 +168,9 @@ def report_ticket_gclid(ticket_ids=[]):
     )
     success_message = f'\nReported {len(update_list)} ticket{"s" if len(update_list) > 1 else "" } to google ads'
     report_lines.append(success_message)
-    MAX_LENGTH_SLACK_MESSAGE = 3000
-    text_report_array = (
-        convert_array_of_strings_in_array_of_strings_with_limited_length(
-            report_lines, MAX_LENGTH_SLACK_MESSAGE - 20
-        )
-    )
-    blocks = []
-    TASK_TITLE = "REPORT TICKET GCLID TASK:\n\n"
-    for idx, text in enumerate(text_report_array):
-        message = f"```\n{TASK_TITLE if idx == 0 else ''}{text}```"
-        blocks.append(
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": message,
-                },
-            }
-        )
-        logger.info(message)
-
-    send_slack_notification(
-        blocks=blocks,
-        url=settings.HOOK_SLACK_PROLOCKSMITHS_ALERTS,
+    report_to_slack(
+        "REPORT TICKET GCLID TASK",
+        report_lines,
+        settings.HOOK_SLACK_PROLOCKSMITHS_ALERTS,
+        logger,
     )

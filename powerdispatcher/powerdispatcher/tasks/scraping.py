@@ -3,12 +3,14 @@ import traceback
 import ipdb
 from celery.utils.log import get_task_logger
 from django.utils import timezone
+from django.conf import settings
 
 # TOOLS FOR TESTING
 # from selenium.webdriver.common.action_chains import ActionChains
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as EC
 # from selenium.webdriver.support.ui import WebDriverWait
+from powerdispatcher.powerdispatcher.utils import report_to_slack
 from service.celery import app
 
 from powerdispatcher.models import ProjectConfiguration, ScraperLog
@@ -64,6 +66,7 @@ def get_tickets_info(ticket_ids=[], debug=False):
 
 @app.task(queue=queue_name)
 def scrape_and_upsert_powerdispatch_tickets():
+    task_title = "SCRAPE AND UPSERT POWERDISPATCH TICKETS"
 
     last_scraper_log = ScraperLog.objects.filter(
         status=ScraperLog.STATUS_SUCCESS
@@ -98,6 +101,8 @@ def scrape_and_upsert_powerdispatch_tickets():
     scraper = PowerdispatchSiteScraper()
 
     scraping_completed = False
+    report_lines = []
+    error_lines = ["🆘 Task errors:"]
     try:
         log_info("Initiating Webdriver", scraper_log=scraper_log)
 
@@ -146,12 +151,29 @@ def scrape_and_upsert_powerdispatch_tickets():
         stacktrace = traceback.format_exc()
         scraper.log(stacktrace)
         scraper.log("{} Terminating".format(e))
-        logger.error(e)
         scraper_log.end_as(status=ScraperLog.STATUS_FAILED, reason=str(e))
+        error_lines.append(str(e))
 
     scraper.close_driver()
 
     if not scraping_completed:
+        report_lines.append("Scraper Log:")
+        report_lines.append(f"Id: {scraper_log.id}")
+        report_lines.append(f"From date: {scraper_log.from_date.strftime("%Y-%m-%d %H:%M:%S")}")
+        report_lines.append(f"To date: {scraper_log.to_date.strftime("%Y-%m-%d %H:%M:%S")}")
+        report_lines.append(f"Start time: {scraper_log.start_time.strftime("%Y-%m-%d %H:%M:%S")}")
+        report_lines.append(f"End time: {scraper_log.end_time.strftime("%Y-%m-%d %H:%M:%S")}")
+        report_lines.append(f"Scraped_tickets: {scraper_log.scraped_tickets}")
+        report_lines.append(f"Added_tickets: {scraper_log.added_tickets}")
+        report_lines.append(f"Status: {scraper_log.status}")
+        report_lines.append(f"Reason: {scraper_log.reason}")
+        report_lines.append(f"Last message: {scraper_log.last_message}")
+        report_to_slack(
+            task_title,
+            report_lines + error_lines,
+            settings.HOOK_SLACK_PROLOCKSMITHS_ERRORS,
+            logger,
+        )
         return
 
     powerdispatch_manager = PowerdispatchManager()
@@ -171,12 +193,40 @@ def scrape_and_upsert_powerdispatch_tickets():
             status=ScraperLog.STATUS_SUCCESS, reason="End of task reached"
         )
     except Exception as e:
-        logger.error(e)
+        stacktrace = traceback.format_exc()
+        logger.error(stacktrace)
+        logger.error("{} Terminating".format(e))
         scraper_log.end_as(status=ScraperLog.STATUS_FAILED, reason=str(e))
+        error_lines.append(str(e))
 
     scraper_log.scraped_tickets = len(tickets_info)
     scraper_log.added_tickets = new_tickets
     scraper_log.save(update_fields=["scraped_tickets", "added_tickets"])
+    report_lines.append("Scraper Log:")
+    report_lines.append(f"Id: {scraper_log.id}")
+    report_lines.append(f"From date: {scraper_log.from_date.strftime("%Y-%m-%d %H:%M:%S")}")
+    report_lines.append(f"To date: {scraper_log.to_date.strftime("%Y-%m-%d %H:%M:%S")}")
+    report_lines.append(f"Start time: {scraper_log.start_time.strftime("%Y-%m-%d %H:%M:%S")}")
+    report_lines.append(f"End time: {scraper_log.end_time.strftime("%Y-%m-%d %H:%M:%S")}")
+    report_lines.append(f"Scraped_tickets: {scraper_log.scraped_tickets}")
+    report_lines.append(f"Added_tickets: {scraper_log.added_tickets}")
+    report_lines.append(f"Status: {scraper_log.status}")
+    report_lines.append(f"Reason: {scraper_log.reason}")
+    report_lines.append(f"Last message: {scraper_log.last_message}")
+    if len(error_lines) > 1:
+        report_to_slack(
+            task_title,
+            report_lines + error_lines,
+            settings.HOOK_SLACK_PROLOCKSMITHS_ERRORS,
+            logger,
+        )
+    else:
+        report_to_slack(
+            task_title,
+            report_lines,
+            settings.HOOK_SLACK_PROLOCKSMITHS_ALERTS,
+            logger,
+        )
 
 
 @app.task(queue=queue_name)
