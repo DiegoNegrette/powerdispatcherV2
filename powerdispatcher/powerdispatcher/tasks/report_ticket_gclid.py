@@ -78,8 +78,19 @@ def report_ticket_gclid(ticket_ids=[]):
             if call.get("gclid", None):
                 gclid = call.get("gclid", None)
                 break
-        formatted_date = ticket.created_at.strftime("%Y-%m-%d %H:%M:%S:%z")
-        formatted_date_with_colon = formatted_date[:-2] + ":" + formatted_date[-2:]
+        # Assuming ticket.created_at is your datetime object
+        ticket_created_at = ticket.created_at
+
+        # Format the datetime part
+        formatted_datetime = ticket_created_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        # Format the timezone offset part
+        offset_hours = ticket_created_at.utcoffset().seconds // 3600
+        offset_minutes = (ticket_created_at.utcoffset().seconds // 60) % 60
+        timezone_offset = "{:02d}:{:02d}".format(offset_hours, offset_minutes)
+
+        # Concatenate datetime and timezone offset with a colon
+        formatted_date_with_colon = formatted_datetime + "+" + timezone_offset
         data = {
             "conversion_action_id": "704314739",
             "conversion_date_time": formatted_date_with_colon,
@@ -127,6 +138,8 @@ def report_ticket_gclid(ticket_ids=[]):
 
     update_list = []
     update_date = timezone.now()
+    report_lines = []
+    report_lines.append("```")
     for idx, status in enumerate(responses):
         if status == 200:
             for ticket_dict in tickets_in_batch[idx]:
@@ -135,14 +148,19 @@ def report_ticket_gclid(ticket_ids=[]):
                 ticket.has_reported_gclid = True
                 ticket.reported_gclid_at = update_date
                 update_list.append(ticket)
+                report_lines.append(
+                    f"******** {idx+1}/{len(target_tickets)} Ticket id: {ticket.powerdispatch_ticket_id} - Phone: +1 {ticket.customer.phone} - GCLID: {ticket.reported_gclid} ********"  # noqa
+                )
     Ticket.objects.bulk_update(
         update_list, ["reported_gclid", "has_reported_gclid", "reported_gclid_at"]
     )
     success_message = f'Reported {len(update_list)} ticket{"s" if len(update_list) > 1 else "" } to google ads'
-    logger.info(success_message)
-
+    report_lines.append(success_message)
+    report_lines.append("```")
+    text_report = "\n".join(report_lines)
+    logger.info(text_report)
     blocks = [
-        {"type": "section", "text": {"type": "mrkdwn", "text": success_message}},
+        {"type": "section", "text": {"type": "mrkdwn", "text": text_report}},
     ]
     send_slack_notification(
         blocks=blocks,
