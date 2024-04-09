@@ -309,6 +309,10 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 ticket_id_element = job.find_element(By.XPATH, "./td[5]")
                 ticket_id = ticket_id_element.text
                 all_ticket_ids.append(ticket_id)
+                try:
+                    self.scroll_to_element(ticket_id_element)
+                except Exception:
+                    pass
                 if max_results and len(all_ticket_ids) >= max_results:
                     break
 
