@@ -159,10 +159,10 @@ def report_ticket_gclid(ticket_ids=[]):
                 ticket.has_reported_gclid = True
                 ticket.reported_gclid_at = update_date
                 update_list.append(ticket)
-                report_lines.append(
-                    f"******** Ticket id: {ticket.powerdispatch_ticket_id} - Phone: +1{ticket.customer.phone} - GCLID: {ticket.reported_gclid} ********"  # noqa
-                )
-    report_lines = report_lines + discarded_tickets
+                # report_lines.append(
+                #     f"******** Ticket id: {ticket.powerdispatch_ticket_id} - Phone: +1{ticket.customer.phone} - GCLID: {ticket.reported_gclid} ********"  # noqa
+                # )
+    # report_lines = report_lines + discarded_tickets
     Ticket.objects.bulk_update(
         update_list, ["reported_gclid", "has_reported_gclid", "reported_gclid_at"]
     )
