@@ -23,6 +23,7 @@ retry-requests = "*"
 aiohttp = "*"
 psycopg2 = "*"
 aiohttp-retry = "*"
+pytz = "*"
 
 [dev-packages]
 flake8 = "*"

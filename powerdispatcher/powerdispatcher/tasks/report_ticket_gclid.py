@@ -1,6 +1,8 @@
 import aiohttp
 import asyncio
 import json
+import pytz
+
 
 from celery.utils.log import get_task_logger
 from django.conf import settings
@@ -93,16 +95,19 @@ def report_ticket_gclid(ticket_ids=[]):
         # Assuming ticket.created_at is your datetime object
         ticket_created_at = ticket.created_at
 
+        # Convert the datetime object to Central time zone
+        central = pytz.timezone("US/Central")
+        ticket_created_at = ticket_created_at.astimezone(central)
+
         # Format the datetime part
         formatted_datetime = ticket_created_at.strftime("%Y-%m-%d %H:%M:%S")
 
-        # Format the timezone offset part
-        offset_hours = ticket_created_at.utcoffset().seconds // 3600
-        offset_minutes = (ticket_created_at.utcoffset().seconds // 60) % 60
-        timezone_offset = "{:02d}:{:02d}".format(offset_hours, offset_minutes)
+        # Get the UTC offset for Central time zone
+        utc_offset = ticket_created_at.strftime("%z")
+        utc_offset_formatted = utc_offset[:-2] + ":" + utc_offset[-2:]
 
-        # Concatenate datetime and timezone offset with a colon
-        formatted_date_with_colon = formatted_datetime + "+" + timezone_offset
+        # Concatenate datetime and timezone offset
+        formatted_date_with_colon = formatted_datetime + utc_offset_formatted
         data = {
             "conversion_action_id": "704314739",
             "conversion_date_time": formatted_date_with_colon,

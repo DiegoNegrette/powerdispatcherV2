@@ -54,8 +54,6 @@ services:
         image: django-powerdispatcher
         env_file:
             - .env
-        build:
-            context: ./
         volumes:
             - ./:/code
         command: >
