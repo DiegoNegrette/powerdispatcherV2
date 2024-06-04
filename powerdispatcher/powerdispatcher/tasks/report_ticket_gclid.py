@@ -93,7 +93,8 @@ def report_ticket_gclid(ticket_ids=[]):
             continue
 
         # Assuming ticket.created_at is your datetime object
-        ticket_created_at = ticket.created_at
+        ticket_created_at = timezone.now()
+        # ticket_created_at = ticket.created_at
 
         # Convert the datetime object to Central time zone
         central = pytz.timezone("US/Central")
