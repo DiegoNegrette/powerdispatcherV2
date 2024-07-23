@@ -138,6 +138,8 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATIC_ROOT = f"{BASE_DIR}/staticfiles"
+
 # ------------ Celery
 APP_VHOST = env.str("APP_VHOST", default="powerdispatch")
 CELERY_BROKER_URL = env.str(
