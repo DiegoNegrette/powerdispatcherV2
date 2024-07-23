@@ -1,8 +1,8 @@
 version: "3.6"
 
 networks:
-  default:
-    driver: bridge
+    default:
+        driver: bridge
 
 services:
     # This container has to be exclude from production configurations.
@@ -151,7 +151,7 @@ services:
             - PGADMIN_DEFAULT_PASSWORD:${PGADMIN_DEFAULT_PASSWORD}
         volumes:
             - pgadmin-data:/var/lib/pgadmin
-    
+
 volumes:
     postgres:
     pgadmin-data:

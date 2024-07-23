@@ -150,3 +150,5 @@ postgres
 *.pkl
 
 */logs/*
+
+docker-compose-prod.yml
