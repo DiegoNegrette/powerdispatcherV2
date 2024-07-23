@@ -31,7 +31,7 @@ RUN apt-get update \
 COPY . /code/
 
 # Set work directory
-WORKDIR /code/ragatex
+WORKDIR /code/powerdispatcher
 
 # Collect static files for production
 RUN python manage.py collectstatic --noinput
