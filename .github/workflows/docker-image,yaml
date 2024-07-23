@@ -1,0 +1,30 @@
+name: Docker Image CI
+
+on:
+    push:
+        branches: ["main"]
+        paths:
+            - "powerdispatcher/**"
+            - "DockerfileProd"
+            - "Pipfile"
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Log in to DockerHub
+              run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+            - name: Build the Docker image
+              run: docker build . --file DockerfileProd --tag powerdispatch-prod:latest
+
+            - name: Tag the Docker image
+              run: docker tag powerdispatch-prod:latest ${{ secrets.DOCKERHUB_USERNAME }}/powerdispatch-prod:latest
+
+            - name: Push the Docker image
+              run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/powerdispatch-prod:latest
