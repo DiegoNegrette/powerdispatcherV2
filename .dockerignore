@@ -1,0 +1,24 @@
+ragatex/ragatex/management/commands/data/*
+Dockerfile
+Makefile
+NOTES.md
+docker-compose.*
+docker-compose-prod.*
+set_env.*
+setup.cfg
+DockerfileProd
+README.md
+k8s/*
+local/*
+
+# Development and environment specific files
+.vscode/*
+.docker/*
+seluser-data-dir/*
+.github/*
+.prettierrc
+.gitignore
+*/logs/*
+*.csv
+*.xlsx
+*.json
