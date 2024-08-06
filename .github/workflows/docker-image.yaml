@@ -6,6 +6,7 @@ on:
         paths:
             - "powerdispatcher/**"
             - "DockerfileProd"
+            - "nginx/**"
             - "Pipfile"
     pull_request:
         branches: ["main"]
