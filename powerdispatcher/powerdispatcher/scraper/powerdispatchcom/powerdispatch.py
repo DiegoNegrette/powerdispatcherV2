@@ -284,7 +284,8 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             EC.presence_of_element_located((By.ID, "btnSearch"))
         )
         self.scroll_to_element(btn_search)
-        btn_search.click()
+        # btn_search.click()
+        self.click_element(btn_search)
         self.sleep(10)
 
     def get_ticket_ids_from_search_result(self, max_results=None):

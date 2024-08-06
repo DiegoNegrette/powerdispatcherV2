@@ -1,6 +1,8 @@
 import logging
 import time
 
+from selenium.webdriver.common.action_chains import ActionChains
+
 from django.conf import settings
 
 logger = logging.getLogger("scraper")
@@ -46,3 +48,13 @@ class ScraperBaseMixin:
             script += f" window.scrollBy(0, {offset_top});"
         self.driver.execute_script(script, element)
         self.sleep(1)
+
+    def click_element(self, element):
+        try:
+            ActionChains(self.driver).move_to_element(element).perform()
+            self.sleep(0.5)
+            element.click()
+        # except StaleElementReferenceException:
+        #     self.click_element(element)
+        except Exception:
+            self.driver.execute_script("arguments[0].click();", element)
