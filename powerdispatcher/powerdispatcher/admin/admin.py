@@ -30,7 +30,6 @@ admin.site.register(JobDescription)
 admin.site.register(Location)
 admin.site.register(ProjectConfiguration, SingletonModelAdmin)
 admin.site.register(Source)
-admin.site.register(ScraperLog)
 admin.site.register(Technician)
 
 
@@ -102,6 +101,22 @@ class TicketAdmin(admin.ModelAdmin):
             return format_link(ticket_permalink, obj.powerdispatch_ticket_id)
 
     get_powerdispatch_ticket.short_description = "Powerdispatch Id"
+
+
+@admin.register(ScraperLog)
+class ScraperLog(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "from_date",
+        "to_date",
+        "start_time",
+        "end_time",
+        "scraped_tickets",
+        "added_tickets",
+        "status",
+        "reason",
+        "last_message",
+    )
 
 
 @admin.register(Status)
