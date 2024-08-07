@@ -42,6 +42,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         options = OptionClass()
 
         options.add_argument("--start-maximized")
+        options.add_argument("--disable-gpu")
 
         for options_header in options_headers:
             options.add_argument(options_header)
