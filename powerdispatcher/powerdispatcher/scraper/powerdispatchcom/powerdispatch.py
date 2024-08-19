@@ -32,16 +32,19 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         self.blocked_domains = []
 
     def get_default_options(self):
-        options_headers = ["--disable-notifications"]
+        options_headers = ["--disable-notifications", "--no-sandbox"]
         initialize_options = {
             "chrome": webdriver.ChromeOptions,
             "firefox": webdriver.FirefoxOptions,
         }
-        options_headers += ["--headless", "--no-sandbox"] if settings.HEADLESS else []
+        options_headers += ["--headless"] if settings.HEADLESS else []
         OptionClass = initialize_options.get(self.browser_type)
         options = OptionClass()
 
         options.add_argument("--start-maximized")
+        # options.add_argument("enable-automation")
+        # options.add_argument("--disable-extensions")
+        # options.add_argument("--dns-prefetch-disable")
         options.add_argument("--disable-gpu")
 
         for options_header in options_headers:
@@ -369,6 +372,49 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             )
         )
 
+    def get_ticket_technician(self):
+        technician = (
+            WebDriverWait(self.driver, timeout=20)
+            .until(EC.presence_of_element_located((By.ID, "select2-ddTech-container")))
+            .text
+        )
+        return technician
+
+    def get_ticket_status(self):
+        status_element = WebDriverWait(self.driver, timeout=20).until(
+            EC.presence_of_element_located((By.ID, "ddStatus"))
+        )
+        status_selector = Select(status_element)
+        status = status_selector.first_selected_option.text
+        if status == "Canceled":
+            who_canceled_element = WebDriverWait(self.driver, timeout=20).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//*[@id='cancel_slide']/fieldset/select")
+                )
+            )
+            who_canceled_element_selector = Select(who_canceled_element)
+
+            try:
+                selected_option = (
+                    who_canceled_element_selector.first_selected_option.text
+                )
+                who_canceled_str = selected_option if selected_option else None
+            except Exception:
+                who_canceled_str = None
+
+            why_canceled_element = WebDriverWait(self.driver, timeout=20).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//*[@id='cancel_slide']/fieldset/input")
+                )
+            )
+            why_canceled_str = why_canceled_element.get_attribute("value")
+            why_canceled_str = why_canceled_str if why_canceled_str else None
+        else:
+            who_canceled_str = None
+            why_canceled_str = None
+
+        return status, who_canceled_str, why_canceled_str
+
     def update_canceled_fields(self, who_canceled, why_canceled):
         who_canceled_element = WebDriverWait(self.driver, timeout=20).until(
             EC.presence_of_element_located(
@@ -441,6 +487,13 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             .until(EC.presence_of_element_located((By.ID, "zip")))
             .get_attribute("value")
         )
+
+        alternative_source = (
+            WebDriverWait(self.driver, timeout=20)
+            .until(EC.presence_of_element_located((By.XPATH, "//input[@name='item']")))
+            .get_attribute("value")
+        )
+
         address = (
             WebDriverWait(self.driver, timeout=20)
             .until(EC.presence_of_element_located((By.ID, "address")))
@@ -455,11 +508,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         job_date_str = job_date_element.get_attribute("value")
         job_date_obj = datetime.datetime.strptime(job_date_str, "%Y-%m-%d")
 
-        status_element = WebDriverWait(self.driver, timeout=20).until(
-            EC.presence_of_element_located((By.ID, "ddStatus"))
-        )
-        status_selector = Select(status_element)
-        status = status_selector.first_selected_option.text
+        status, who_canceled_str, why_canceled_str = self.get_ticket_status()
 
         technician_parts = self.driver.find_element(By.NAME, "txtParts").get_attribute(
             "value"
@@ -501,33 +550,6 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                 credit_payment += Decimal(value)
         except Exception:
             pass
-
-        if status == "Canceled":
-            who_canceled_element = WebDriverWait(self.driver, timeout=20).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//*[@id='cancel_slide']/fieldset/select")
-                )
-            )
-            who_canceled_element_selector = Select(who_canceled_element)
-
-            try:
-                selected_option = (
-                    who_canceled_element_selector.first_selected_option.text
-                )
-                who_canceled_str = selected_option if selected_option else None
-            except Exception:
-                who_canceled_str = None
-
-            why_canceled_element = WebDriverWait(self.driver, timeout=20).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//*[@id='cancel_slide']/fieldset/input")
-                )
-            )
-            why_canceled_str = why_canceled_element.get_attribute("value")
-            why_canceled_str = why_canceled_str if why_canceled_str else None
-        else:
-            who_canceled_str = None
-            why_canceled_str = None
 
         # LOG PAGE
         logs_btn = WebDriverWait(self.driver, timeout=20).until(
@@ -643,6 +665,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             "customer_phone": customer_phone_str,
             "address": address,
             "zip_code": zip_code,
+            "alternative_source": alternative_source,
             "technician": technician,
             "job_description": job_description_str,
             "company": company,

@@ -108,6 +108,7 @@ class PowerdispatchManager:
             "closed_by": closed_by,
             "branch": branch,
             "zip_code": zip_code,
+            "alternative_source": ticket_info["alternative_source"],
             "address": address,
             "credit_payment": ticket_info["credit_payment"],
             "cash_payment": ticket_info["cash_payment"],

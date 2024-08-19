@@ -41,6 +41,11 @@ class ProjectConfiguration(SingletonModel):
         verbose_name="All tickets from this date will report their gclid",
     )
 
+    first_date_to_review_follow_up_tickets = models.DateField(
+        default=timezone.localtime,
+        verbose_name="All tickets from this date will be reviewed if they are in follow up state",
+    )
+
     class Meta:
         verbose_name = "Project configuration"
         verbose_name_plural = "Project configurations"

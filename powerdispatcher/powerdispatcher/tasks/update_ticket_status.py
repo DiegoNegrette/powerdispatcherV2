@@ -27,7 +27,7 @@ def log_info(message, scraper_log=None):
 
 @app.task(queue_name=queue_name)
 def update_ticket_status(ticket_ids=[]):
-    MAX_TICKETS_TO_UPDATE = 100
+    MAX_TICKETS_TO_UPDATE = 1000
     status, _ = Status.objects.get_or_create(
         name="Canceled",
         who_canceled="Office",
