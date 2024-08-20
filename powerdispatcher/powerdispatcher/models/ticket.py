@@ -56,11 +56,18 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
     has_reported_gclid = models.BooleanField(default=False)
     reported_gclid_at = models.DateTimeField(null=True, blank=True)
 
-    alternative_source = models.TextField()
+    alternative_source = models.TextField(null=True, blank=True)
 
-    alternative_technician = models.ForeignKey(Technician, on_delete=models.PROTECT)
+    alternative_technician = models.ForeignKey(
+        Technician,
+        on_delete=models.PROTECT,
+        related_name="alternative_tickets",
+        null=True,
+        blank=True,
+    )
     follow_up_reviewed_times = models.IntegerField(default=0)
     follow_up_last_reviewed_at = models.DateTimeField(null=True, blank=True)
+    follow_up_strategy_successfull = models.BooleanField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Tickets"
@@ -94,6 +101,7 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
         self.status = status
         self.follow_up_reviewed_times += 1
         self.follow_up_last_reviewed_at = timezone.now()
+        self.follow_up_strategy_successfull = False
         self.save(
             update_fields=[
                 "technician",

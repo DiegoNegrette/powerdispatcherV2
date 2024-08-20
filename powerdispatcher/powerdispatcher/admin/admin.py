@@ -79,6 +79,7 @@ class TicketAdmin(admin.ModelAdmin):
         "job_date",
         "job_description",
         "technician",
+        "alternative_technician",
         "status",
     )
     readonly_fields = ("powerdispatch_ticket_id",)

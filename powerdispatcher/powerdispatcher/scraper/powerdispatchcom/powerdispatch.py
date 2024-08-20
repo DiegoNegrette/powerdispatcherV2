@@ -125,7 +125,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
 
         desired_capabilities = eligible_capabilities[self.browser_type]
 
-        desired_capabilities["pageLoadStrategy"] = "none"
+        # desired_capabilities["pageLoadStrategy"] = "none"
 
         return DriverClass(
             connection_options[settings.CONNECTION_TYPE],
@@ -436,6 +436,8 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             ticket_id=ticket_id
         )
         self.navigate_to(ticket_permalink)
+
+        self.sleep(1)
 
         created_datetime_str = (
             WebDriverWait(self.driver, timeout=20)
