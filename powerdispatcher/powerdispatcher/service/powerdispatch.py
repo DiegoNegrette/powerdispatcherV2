@@ -98,6 +98,11 @@ class PowerdispatchManager:
         if ticket_info["address"] and len(ticket_info["address"]) > 3:
             address = ticket_info["address"]
         branch = self.upsert_branch(ticket_info["company"])
+        alternative_technician = (
+            self.upsert_technician(ticket_info["alternative_technician"])
+            if ticket_info["alternative_technician"]
+            else None
+        )
         ticket_obj_dict = {
             "powerdispatch_ticket_id": powerdispatch_ticket_id,
             "customer": customer,
@@ -120,6 +125,13 @@ class PowerdispatchManager:
             "accepted_at": ticket_info["accepted_at"],
             "first_call_at": ticket_info["first_call_at"],
             "closed_at": ticket_info["closed_at"],
+            "alternative_technician": alternative_technician,
+            "follow_up_given_by_alternative_technician": ticket_info[
+                "follow_up_given_by_alternative_technician"
+            ],
+            "follow_up_strategy_successfull": ticket_info[
+                "follow_up_strategy_successfull"
+            ],
         }
         return ticket_obj_dict
 

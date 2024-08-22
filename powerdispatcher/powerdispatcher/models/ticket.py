@@ -65,9 +65,13 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
         null=True,
         blank=True,
     )
+    follow_up_given_by_alternative_technician = models.BooleanField(
+        null=True, blank=True
+    )
+    follow_up_strategy_successfull = models.BooleanField(null=True, blank=True)
+
     follow_up_reviewed_times = models.IntegerField(default=0)
     follow_up_last_reviewed_at = models.DateTimeField(null=True, blank=True)
-    follow_up_strategy_successfull = models.BooleanField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Tickets"

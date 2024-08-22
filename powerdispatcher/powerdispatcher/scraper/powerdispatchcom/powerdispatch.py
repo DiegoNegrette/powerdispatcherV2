@@ -431,6 +431,119 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         )
         why_canceled_element.send_keys(why_canceled)
 
+    def get_ticket_follow_up_info(self):
+        alternative_technician = None
+        follow_up_given_by_alternative_technician = None
+        follow_up_strategy_successfull = None
+        comments_child_datetime_elements = WebDriverWait(self.driver, timeout=20).until(
+            EC.presence_of_all_elements_located(
+                (
+                    By.XPATH,
+                    "//*[@id='paneComments']/table[2]/tbody/tr/td[2]/*[@class='comment']/descendant::div[@class='header']/span[1]",
+                )
+            )
+        )
+        for comments_child_datetime_element in comments_child_datetime_elements:
+            self.click_element(comments_child_datetime_element)
+
+        results_found_in_table_dict = {
+            "technician": {"table_number": None, "value": None},
+            "alternative_technician": {"table_number": None, "value": None},
+            "in_progress_final_status": {
+                "table_number": None,
+            },
+        }
+        # Tabla de comentarios en orden
+        changelog_elements = WebDriverWait(self.driver, timeout=20).until(
+            EC.presence_of_all_elements_located(
+                (
+                    By.XPATH,
+                    "//*[@id='paneComments']/table[2]/tbody/tr/td[2]/*[@class='comment']/descendant::caption[contains(text(), 'Changelog for')]",
+                )
+            )
+        )
+        for idx, changelog_element in enumerate(changelog_elements):
+            # This is comment since i dont know if in progress status is in call or ticket
+            # changelog_table = changelog_element.find_element(By.XPATH, "./parent::table")
+            # if "changelog for job" in changelog_element.text.lower():
+            #     # job_table
+            #     pass
+            # elif "changelog for call" in changelog_element.text.lower():
+            #     # call table
+            #     pass
+            if "changelog for job" not in changelog_element.text.lower():
+                continue
+            job_changelog = changelog_element.find_element(By.XPATH, "./parent::table")
+            try:
+                found_technician = job_changelog.find_element(
+                    By.XPATH,
+                    "./descendant::tr/td[text()='technician']/following-sibling::td[2]",
+                ).text
+                type_of_technician = (
+                    "alternative_technician"
+                    if "report" in found_technician.lower()
+                    else "technician"
+                )
+                if not results_found_in_table_dict[type_of_technician]["value"]:
+                    results_found_in_table_dict[type_of_technician]["table_number"] = (
+                        idx + 1
+                    )
+                    results_found_in_table_dict[type_of_technician][
+                        "value"
+                    ] = found_technician
+            except Exception:
+                pass
+            try:
+                final_status = job_changelog.find_element(
+                    By.XPATH,
+                    "./descendant::tr/td[text()='status']/following-sibling::td[2]",
+                ).text
+                if (
+                    final_status == "INPROGRESS"
+                    and not results_found_in_table_dict["in_progress_final_status"][
+                        "table_number"
+                    ]
+                ):
+                    results_found_in_table_dict["in_progress_final_status"][
+                        "table_number"
+                    ] = (idx + 1)
+            except Exception:
+                pass
+
+        # Algorithm to decide follow up
+        if results_found_in_table_dict["alternative_technician"]["value"]:
+            # Hay un tecnico que se llama reports pero no tiene llamada posterior que diga in progress
+            alternative_technician = results_found_in_table_dict[
+                "alternative_technician"
+            ]["value"]
+            follow_up_given_by_alternative_technician = False
+            follow_up_strategy_successfull = False
+
+        if (
+            alternative_technician
+            and results_found_in_table_dict["in_progress_final_status"]["table_number"]
+            and results_found_in_table_dict["alternative_technician"]["table_number"]
+            > results_found_in_table_dict["in_progress_final_status"]["table_number"]
+        ):
+            # Hay un tecnico que se llama reports y tiene llamada posterior que diga in progress
+            follow_up_given_by_alternative_technician = True
+
+        if (
+            alternative_technician
+            and follow_up_given_by_alternative_technician
+            and results_found_in_table_dict["technician"]["table_number"]
+            and results_found_in_table_dict["alternative_technician"]["table_number"]
+            > results_found_in_table_dict["technician"]["table_number"]
+        ):
+            # Hay un tecnico que se llama reports y tiene llamada posterior que diga in progress y hay un tecnico diferente a reports que fue asignado posteriormente
+            follow_up_strategy_successfull = True
+
+        return (
+            alternative_technician,
+            follow_up_given_by_alternative_technician,
+            follow_up_strategy_successfull,
+        )
+
     def get_ticket_info(self, ticket_id):
         ticket_permalink = settings.POWERDISPATCHER_TICKET_URL.format(
             ticket_id=ticket_id
@@ -662,6 +775,12 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         if closed_time:
             closed_at = get_datetime_obj_from_str(closed_time, expected_pattern)
 
+        (
+            alternative_technician,
+            follow_up_given_by_alternative_technician,
+            follow_up_strategy_successfull,
+        ) = self.get_ticket_follow_up_info()
+
         ticket_data = {
             "powerdispatch_ticket_id": ticket_id,
             "customer_phone": customer_phone_str,
@@ -686,6 +805,9 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             "closed_at": closed_at,
             "who_canceled": who_canceled_str,
             "why_canceled": why_canceled_str,
+            "alternative_technician": alternative_technician,
+            "follow_up_given_by_alternative_technician": follow_up_given_by_alternative_technician,
+            "follow_up_strategy_successfull": follow_up_strategy_successfull,
         }
 
         return ticket_data
