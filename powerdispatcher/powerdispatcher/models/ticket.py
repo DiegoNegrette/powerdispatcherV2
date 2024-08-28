@@ -71,6 +71,8 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
     follow_up_strategy_successfull = models.BooleanField(null=True, blank=True)
 
     follow_up_reviewed_times = models.IntegerField(default=0)
+    follow_up_reviewed_failed_times = models.IntegerField(default=0)
+    follow_up_reviewed_failed_last_reason = models.IntegerField(default=0)
     follow_up_last_reviewed_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:

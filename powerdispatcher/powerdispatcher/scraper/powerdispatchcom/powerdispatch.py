@@ -378,6 +378,8 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             .until(EC.presence_of_element_located((By.ID, "select2-ddTech-container")))
             .text
         )
+        if "select a technician" in technician.lower():
+            technician = None
         return technician
 
     def get_ticket_status(self):
@@ -578,14 +580,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         )
         customer_phone_str = customer_phone.get_attribute("value")
 
-        technician = (
-            WebDriverWait(self.driver, timeout=20)
-            .until(EC.presence_of_element_located((By.ID, "select2-ddTech-container")))
-            .text
-        )
-
-        if "select a technician" in technician.lower():
-            technician = None
+        technician = self.get_ticket_technician()
 
         company = (
             WebDriverWait(self.driver, timeout=20)
@@ -837,7 +832,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             }
             job_descriptions.append(job_description_dict)
         return job_descriptions
-
+    
     def close_driver(self):
         self.log("Closing driver")
 
