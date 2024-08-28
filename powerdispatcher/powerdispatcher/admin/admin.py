@@ -70,8 +70,9 @@ class TicketAdmin(admin.ModelAdmin):
         linkify("technician"),
         linkify("created_by"),
         linkify("closed_by"),
+        linkify("status")
     )
-    list_filter = ("branch",)
+    list_filter = ("branch", "status__name")
     list_select_related = (
         "branch",
         "created_by",
