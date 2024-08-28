@@ -451,9 +451,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         results_found_in_table_dict = {
             "technician": {"table_number": None, "value": None},
             "alternative_technician": {"table_number": None, "value": None},
-            "in_progress_final_status": {
-                "table_number": None,
-            },
+            "in_progress_final_status": [],
         }
         # Tabla de comentarios en orden
         changelog_elements = WebDriverWait(self.driver, timeout=20).until(
@@ -500,15 +498,10 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                     By.XPATH,
                     "./descendant::tr/td[text()='status']/following-sibling::td[2]",
                 ).text
-                if (
-                    final_status == "INPROGRESS"
-                    and not results_found_in_table_dict["in_progress_final_status"][
-                        "table_number"
-                    ]
-                ):
-                    results_found_in_table_dict["in_progress_final_status"][
-                        "table_number"
-                    ] = (idx + 1)
+                if final_status == "INPROGRESS":
+                    results_found_in_table_dict["in_progress_final_status"].append(
+                        {"table_number": (idx + 1)}
+                    )
             except Exception:
                 pass
 
@@ -521,14 +514,24 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             follow_up_given_by_alternative_technician = False
             follow_up_strategy_successfull = False
 
-        if (
-            alternative_technician
-            and results_found_in_table_dict["in_progress_final_status"]["table_number"]
-            and results_found_in_table_dict["alternative_technician"]["table_number"]
-            > results_found_in_table_dict["in_progress_final_status"]["table_number"]
-        ):
-            # Hay un tecnico que se llama reports y tiene llamada posterior que diga in progress
-            follow_up_given_by_alternative_technician = True
+        for call_dict in results_found_in_table_dict["in_progress_final_status"]:
+            if (
+                alternative_technician
+                and results_found_in_table_dict["alternative_technician"][
+                    "table_number"
+                ]
+                > call_dict["table_number"]
+            ) and (
+                not results_found_in_table_dict["technician"]["table_number"]
+                or (
+                    results_found_in_table_dict["technician"]["table_number"]
+                    and call_dict["table_number"]
+                    > results_found_in_table_dict["technician"]["table_number"]
+                )
+            ):
+                # Hay un tecnico que se llama reports y tiene llamada posterior que diga in progress
+                follow_up_given_by_alternative_technician = True
+                break
 
         if (
             alternative_technician
@@ -832,7 +835,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             }
             job_descriptions.append(job_description_dict)
         return job_descriptions
-    
+
     def close_driver(self):
         self.log("Closing driver")
 

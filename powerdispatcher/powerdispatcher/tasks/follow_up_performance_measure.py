@@ -35,7 +35,16 @@ def review_follow_up_tickets(ticket_ids=[]):
         target_tickets = (
             Ticket.objects.filter(
                 Q(created__gte=from_date),
-                # Q(description=CLO, LO, RESIDENTIAL LO),
+                ~Q(
+                    job_description__description__in=[
+                        "CLO",
+                        "ComercialLO (C)",
+                        "ResidentialLO (R)",
+                        "StorageLO (C)",
+                        "StorageLO (R)",
+                        "TLO",
+                    ]
+                ),
                 Q(status__name__in=["Follow Up", "Estimate", "On hold", "Appointment"]),
                 Q(follow_up_reviewed_failed_times__lt=3),
                 Q(last_scraping_attempt__isnull=True)
@@ -46,7 +55,7 @@ def review_follow_up_tickets(ticket_ids=[]):
         )
         # .order_by("job_date")
         target_tickets = target_tickets[0:100]
-    
+
     ticket_id_to_obj_dict = {ticket.id: ticket for ticket in target_tickets}
 
     scraper = PowerdispatchSiteScraper()
@@ -86,7 +95,9 @@ def review_follow_up_tickets(ticket_ids=[]):
                 }
             except Exception as e:
                 scraper.log(f"{str(e)} Skipping ticket: {ticket_id}")
-                tickets_failed[ticket.id] = {"follow_up_reviewed_failed_last_reason": str(e)}
+                tickets_failed[ticket.id] = {
+                    "follow_up_reviewed_failed_last_reason": str(e)
+                }
     except KeyboardInterrupt:
         pass
     except Exception as e:
@@ -95,9 +106,10 @@ def review_follow_up_tickets(ticket_ids=[]):
         scraper.log("{} Terminating".format(e))
 
     scraper.close_driver()
-    
+
     powerdispatch_manager = PowerdispatchManager()
-    
+
+    tickets_selected_for_update_dict = {}
     for ticket_id, updated_info in tickets_reviewed_successfully_dict:
         try:
             technician = (
@@ -106,7 +118,9 @@ def review_follow_up_tickets(ticket_ids=[]):
                 else None
             )
             alternative_technician = (
-                powerdispatch_manager.upsert_technician(updated_info["alternative_technician"])
+                powerdispatch_manager.upsert_technician(
+                    updated_info["alternative_technician"]
+                )
                 if updated_info["alternative_technician"]
                 else None
             )
@@ -115,12 +129,26 @@ def review_follow_up_tickets(ticket_ids=[]):
                 who_canceled=updated_info["who_canceled"],
                 why_canceled=updated_info["why_canceled"],
             )
+            tickets_selected_for_update_dict[ticket_id] = {
+                "technician": technician,
+                "alternative_technician": alternative_technician,
+                "status": status,
+            }
         except Exception as e:
             stacktrace = traceback.format_exc()
             logger.warning(stacktrace)
             logger.warning(e)
-            tickets_failed[ticket_id] = {"follow_up_reviewed_failed_last_reason": str(e)}
+            tickets_failed[ticket_id] = {
+                "follow_up_reviewed_failed_last_reason": str(e)
+            }
         # follow_up_reviewed_failed_times
         # follow_up_reviewed_failed_last_reason
+    successfull_tickets = []
+    for ticket_id, updated_info in tickets_selected_for_update_dict:
+        ticket_obj = ticket_id_to_obj_dict[ticket_id]
+        ticket_obj.technician = updated_info["technician"]
+        ticket_obj.alternative_technician = updated_info["alternative_technician"]
+        ticket_obj.status = updated_info["status"]
+        successfull_tickets.append(ticket_obj)
     with transaction.atomic():
         pass
