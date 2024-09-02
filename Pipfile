@@ -24,6 +24,7 @@ aiohttp = "*"
 psycopg2 = "*"
 aiohttp-retry = "*"
 pytz = "*"
+djangorestframework = "*"
 
 [dev-packages]
 flake8 = "*"
