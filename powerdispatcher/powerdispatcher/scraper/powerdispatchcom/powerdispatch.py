@@ -12,6 +12,7 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 
 from powerdispatcher.conf import settings
 from powerdispatcher.models import ProjectConfiguration
+from powerdispatcher.service.powerdispatch import PowerdispatchManager
 from powerdispatcher.scraper.base_mixing import ScraperBaseMixin
 from powerdispatcher.utils import get_datetime_obj_from_str, trunc_date
 
@@ -30,6 +31,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         self.webdriver_container_host = "docker-host"
         self.webdriver_container_port = None
         self.blocked_domains = []
+        self.powerdispatch_manager = PowerdispatchManager()
 
     def get_default_options(self):
         options_headers = ["--disable-notifications", "--no-sandbox"]
@@ -484,7 +486,10 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                     if "report" in found_technician.lower()
                     else "technician"
                 )
-                if not results_found_in_table_dict[type_of_technician]["value"]:
+                if (
+                    not results_found_in_table_dict[type_of_technician]["value"]
+                    or type_of_technician == "alternative_technician"
+                ):
                     results_found_in_table_dict[type_of_technician]["table_number"] = (
                         idx + 1
                     )
@@ -773,11 +778,26 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         if closed_time:
             closed_at = get_datetime_obj_from_str(closed_time, expected_pattern)
 
-        (
-            alternative_technician,
-            follow_up_given_by_alternative_technician,
-            follow_up_strategy_successfull,
-        ) = self.get_ticket_follow_up_info()
+        alternative_technician = None
+        follow_up_given_by_alternative_technician = None
+        follow_up_strategy_successfull = None
+
+        if status in [
+            "Follow Up",
+            "Estimate",
+        ] and self.powerdispatch_manager.clean_description(job_description_str) not in [
+            "CLO",
+            "ComercialLO (C)",
+            "ResidentialLO (R)",
+            "StorageLO (C)",
+            "StorageLO (R)",
+            "TLO",
+        ]:
+            (
+                alternative_technician,
+                follow_up_given_by_alternative_technician,
+                follow_up_strategy_successfull,
+            ) = self.get_ticket_follow_up_info()
 
         ticket_data = {
             "powerdispatch_ticket_id": ticket_id,

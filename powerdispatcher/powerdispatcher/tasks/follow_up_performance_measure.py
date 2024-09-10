@@ -45,7 +45,7 @@ def review_follow_up_tickets(ticket_ids=[]):
                         "TLO",
                     ]
                 ),
-                Q(status__name__in=["Follow Up", "Estimate", "On hold", "Appointment"]),
+                Q(status__name__in=["Follow Up", "Estimate"]),
                 Q(follow_up_reviewed_failed_times__lt=3),
                 Q(last_scraping_attempt__isnull=True)
                 | Q(last_scraping_attempt__lt=max_date),
