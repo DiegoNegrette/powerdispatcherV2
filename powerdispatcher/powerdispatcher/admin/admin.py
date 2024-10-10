@@ -9,6 +9,7 @@ from powerdispatcher.admin.utils import format_link, linkify
 from powerdispatcher.conf import settings
 from powerdispatcher.models import (
     Branch,
+    Call,
     Customer,
     Date,
     Dispatcher,
@@ -25,6 +26,7 @@ from powerdispatcher.models import (
 )
 
 admin.site.register(Branch)
+admin.site.register(Call)
 admin.site.register(Customer)
 admin.site.register(JobDescription)
 admin.site.register(Location)
@@ -70,7 +72,7 @@ class TicketAdmin(admin.ModelAdmin):
         linkify("technician"),
         linkify("created_by"),
         linkify("closed_by"),
-        linkify("status")
+        linkify("status"),
     )
     list_filter = ("branch", "status__name")
     list_select_related = (
