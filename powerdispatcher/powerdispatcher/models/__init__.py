@@ -1,5 +1,6 @@
 from powerdispatcher.models.base_mixing import ModifiedTimeStampMixin
 from powerdispatcher.models.branch import Branch
+from powerdispatcher.models.callrail import Call
 from powerdispatcher.models.configuration import ProjectConfiguration
 from powerdispatcher.models.customer import Customer
 from powerdispatcher.models.date import Date
@@ -17,6 +18,7 @@ from powerdispatcher.models.expense import Expense
 
 __all__ = [
     Branch,
+    Call,
     Customer,
     Date,
     Dispatcher,

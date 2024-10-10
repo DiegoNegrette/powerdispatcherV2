@@ -26,6 +26,7 @@ SECRET_KEY = env.str(
 DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = [env.str("ALLOWED_HOSTS", default="127.0.0.1")]
+# ALLOWED_HOSTS += ["vertically-stunning-hare.ngrok-free.app"]
 
 
 # Application definition
@@ -126,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 
 # TIME_ZONE = 'UTC'
-TIME_ZONE = "US/Central"
+TIME_ZONE = "America/New_York"
 
 USE_I18N = True
 
