@@ -455,6 +455,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
             "alternative_technician": {"table_number": None, "value": None},
             "in_progress_final_status": [],
         }
+        is_appointment = False
         # Tabla de comentarios en orden
         changelog_elements = WebDriverWait(self.driver, timeout=20).until(
             EC.presence_of_all_elements_located(
@@ -507,8 +508,17 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
                     results_found_in_table_dict["in_progress_final_status"].append(
                         {"table_number": (idx + 1)}
                     )
+                if final_status == "APPOINTMENT":
+                    is_appointment = True
             except Exception:
                 pass
+
+        if is_appointment:
+            return (
+                alternative_technician,
+                follow_up_given_by_alternative_technician,
+                follow_up_strategy_successfull,
+            )
 
         # Algorithm to decide follow up
         if results_found_in_table_dict["alternative_technician"]["value"]:
@@ -782,10 +792,7 @@ class PowerdispatchSiteScraper(ScraperBaseMixin):
         follow_up_given_by_alternative_technician = None
         follow_up_strategy_successfull = None
 
-        if status in [
-            "Follow Up",
-            "Estimate",
-        ] and self.powerdispatch_manager.clean_description(job_description_str) not in [
+        if self.powerdispatch_manager.clean_description(job_description_str) not in [
             "CLO",
             "ComercialLO (C)",
             "ResidentialLO (R)",
