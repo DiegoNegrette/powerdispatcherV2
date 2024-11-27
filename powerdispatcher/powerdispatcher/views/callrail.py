@@ -50,8 +50,26 @@ def postcall_webhook(request):
             ),
             "recording_url": request.data["recording"],
             "call_json": request.data,
+            "call_id": request.data["id"],
         }
         Call.objects.create(**call_data)
+        return Response(status=status.HTTP_200_OK)
+    except Exception as e:
+        stacktrace = traceback.format_exc()
+        logger.warning(stacktrace)
+        logger.warning(e)
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(["POST"])
+def call_modified_webhook(request):
+    try:
+        logger.info(request.data)
+        if "campaign" not in request.data["changes"]:
+            return Response(status=status.HTTP_200_OK)
+        modified_call = Call.objects.get(call_id=request.data["id"])
+        modified_call.campaign = request.data["campaign"]
+        modified_call.save()
         return Response(status=status.HTTP_200_OK)
     except Exception as e:
         stacktrace = traceback.format_exc()

@@ -5,6 +5,7 @@ from powerdispatcher.models import ModifiedTimeStampMixin
 
 
 class Call(ModifiedTimeStampMixin, TimeStampedModel):
+    call_id = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=255, null=True, blank=True)
     first_time_caller = models.BooleanField(null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
