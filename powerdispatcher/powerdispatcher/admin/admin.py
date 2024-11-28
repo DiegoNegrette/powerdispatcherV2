@@ -26,13 +26,27 @@ from powerdispatcher.models import (
 )
 
 admin.site.register(Branch)
-admin.site.register(Call)
 admin.site.register(Customer)
 admin.site.register(JobDescription)
 admin.site.register(Location)
 admin.site.register(ProjectConfiguration, SingletonModelAdmin)
 admin.site.register(Source)
 admin.site.register(Technician)
+
+
+@admin.register(Call)
+class CallAdmin(admin.ModelAdmin):
+    list_display = (
+        "call_id",
+        "created",
+        "start_time",
+        "phone_number",
+        "name",
+        "source",
+        "medium",
+        "campaign",
+        "ad_group",
+    )
 
 
 @admin.register(Date)

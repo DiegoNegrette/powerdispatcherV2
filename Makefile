@@ -1,27 +1,31 @@
-PG_USER=$(USERNAME)
-PG_DB=$(DATABASE)
+PG_USER=$${USERNAME}
+PG_DB=$${DATABASE}
 BASE=docker-compose -f docker-compose.yml
 KUBE=kubectl
-K8S_NAMESPACE=
-PROJECT_NAME=ragatex
+K8S_NAMESPACE=facebook
+PROJECT_NAME=powerdispatcher
 
 build:
-	call .\set_env.bat && $(BASE) build --build-arg ENVIRONMENT_FLAVOR=dev $(c)
+	(. ./set_env.sh && ${BASE} build --build-arg ENVIRONMENT_FLAVOR=dev ${c})
 
 start:
-	call .\set_env.bat && $(BASE) up $(c)
+	(. ./set_env.sh && ${BASE} up ${c})
 
 start-dontuse:
-	call .\set_env.bat && $(BASE) up $(c) --scale chrome=%NUMBER_OF_WEBDRIVER_NODES%
+	(. ./set_env.sh && ${BASE} up ${c} --scale node-chrome=$$NUMBER_OF_WEBDRIVER_NODES --scale node-chrome-login=$$LOGIN_NUMBER_OF_WEBDRIVER_NODES)
 
 down:
-	call .\set_env.bat && $(BASE) down $(c)
+	(. ./set_env.sh && ${BASE} down ${c})
 
 db_connect:
-	call .\set_dev_env.bat && $(BASE) exec django bash -c "cd $(PROJECT_NAME) && python manage.py dbshell"
+	# connect to the database.
+	(. ./set_dev_env.sh && ${BASE} exec django bash -c 'cd ${PROJECT_NAME} && python manage.py dbshell')
 
 shell_django:
-	call .\set_env.bat && $(BASE) exec django bash -c "cd $(PROJECT_NAME) && python manage.py shell"
+	# i.e: `make shell_django`
+	(. ./set_env.sh && ${BASE} exec django bash -c 'cd ${PROJECT_NAME} && python manage.py shell')
 
 ssh:
-	call .\set_env.bat && $(BASE) exec $(c) bash || $(BASE) exec $(c) sh || $(BASE) run $(c) bash
+	# c == container's name inside of the `docker-compose` file.
+	# i.e: `make ssh c=django`
+	(. ./set_env.sh && ${BASE} exec ${c} bash || ${BASE} exec ${c} sh || ${BASE} run ${c} bash)
