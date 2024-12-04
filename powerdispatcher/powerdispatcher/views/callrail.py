@@ -50,7 +50,7 @@ def postcall_webhook(request):
             ),
             "recording_url": request.data["recording"],
             "call_json": request.data,
-            "call_id": request.data["id"],
+            "call_id": request.data["resource_id"],
         }
         Call.objects.create(**call_data)
         return Response(status=status.HTTP_200_OK)

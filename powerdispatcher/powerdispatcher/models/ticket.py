@@ -71,11 +71,11 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
     follow_up_strategy_successfull = models.BooleanField(null=True, blank=True)
 
     follow_up_reviewed_times = models.IntegerField(default=0)
+    follow_up_last_reviewed_at = models.DateTimeField(null=True, blank=True)
     follow_up_reviewed_failed_times = models.IntegerField(default=0)
     follow_up_reviewed_failed_last_reason = models.CharField(
         max_length=255, null=True, blank=True
     )
-    follow_up_last_reviewed_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Tickets"
@@ -99,23 +99,4 @@ class Ticket(ModifiedTimeStampMixin, TimeStampedModel):
         self.reported_gclid_at = timezone.now()
         self.save(
             update_fields=["reported_gclid", "has_reported_gclid", "reported_gclid_at"]
-        )
-
-    def update_after_review(self, technician, status):
-        if self.technician != technician:
-            pass
-        else:
-            self.alternative_technician = None
-        self.status = status
-        self.follow_up_reviewed_times += 1
-        self.follow_up_last_reviewed_at = timezone.now()
-        self.follow_up_strategy_successfull = False
-        self.save(
-            update_fields=[
-                "technician",
-                "alternative_technician",
-                "status",
-                "follow_up_reviewed_times",
-                "follow_up_last_reviewed_at",
-            ]
         )
